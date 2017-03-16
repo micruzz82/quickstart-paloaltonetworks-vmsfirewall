@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "BootstrapBucketName",
+        "ParameterValue": "cfn-tonynv"
+    },
+    {
+        "ParameterKey": "ServerKeyName",
+        "ParameterValue": "tonynv"
+    }
+]
