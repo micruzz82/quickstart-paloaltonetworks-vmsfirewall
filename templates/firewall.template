@@ -163,20 +163,7 @@
     }
   },
   "Mappings": {
-    "BucketRegionMap" : {
-      "us-west-2"     : { "Name": "panw-aws-us-west-2" },
-      "us-west-1"     : { "Name": "panw-aws-us-west-1" },
-      "us-east-1"     : { "Name": "panw-aws-us-east-1" },
-      "us-east-2"     : { "Name": "panw-aws-us-east-2" },
-      "eu-west-1"     : { "Name": "panw-aws-eu-west-1" },
-      "eu-central-1"     : { "Name": "panw-aws-eu-central-1" },
-      "ap-northeast-1"     : { "Name": "panw-aws-ap-northeast-1" },
-      "ap-northeast-2"     : { "Name": "panw-aws-ap-northeast-2" },
-      "ap-southeast-1"     : { "Name": "panw-aws-ap-southeast-1" },
-      "ap-southeast-2"     : { "Name": "panw-aws-ap-southeast-2" },
-      "sa-east-1"     : { "Name": "panw-aws-sa-east-1" },
-      "ap-south-1"     : { "Name": "panw-aws-ap-south-1" }
-    }
+    
   },
   "Conditions" : {
     "NATGatewayRequired": {"Fn::Equals": [{"Ref": "NATGateway"}, "Yes"]}
@@ -420,16 +407,6 @@
                     "Effect": "Allow",
                     "Action": "s3:GetObject",
                     "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "MasterS3Bucket" }, "/*" ] ] }
-                },
-                {
-                        "Effect": "Allow",
-                        "Action": "s3:ListBucket",
-                        "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Fn::FindInMap" : [ "BucketRegionMap", { "Ref" : "AWS::Region" }, "Name" ] }] ] }
-                },
-                {  
-                        "Effect": "Allow",
-                        "Action": "s3:GetObject",
-                        "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Fn::FindInMap" : [ "BucketRegionMap", { "Ref" : "AWS::Region" }, "Name" ] }, "/*" ] ] }
                 },
                 {
                         "Effect": "Allow",
