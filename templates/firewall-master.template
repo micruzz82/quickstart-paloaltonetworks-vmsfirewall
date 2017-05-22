@@ -119,12 +119,6 @@
        "Description" : "Amazon EC2 Key Pair",
        "Type" : "AWS::EC2::KeyPair::KeyName"
     },
-    "PanS3BucketTpl" : {
-       "Description" : "VM-Series firewall Lambda/Scripts/CFT template S3 Bucket or your own in the same region",
-       "Type" : "String",
-       "MinLength" : "3",
-       "MaxLength" : "63"
-    },
     "SSHLocation" : {
       "Description" : "Restrict SSH access to the VM-Series firewall (by default can be accessed from anywhere)",
       "Type" : "String",
@@ -222,7 +216,7 @@
       },
       {
         "Label" : {"default": "S3 Bucket details"},
-        "Parameters" : ["MasterS3Bucket", "PanS3BucketTpl"]
+        "Parameters" : ["MasterS3Bucket"]
       },
       {
         "Label" : {"default": "VM-Series API Key"},
@@ -267,7 +261,6 @@
         "KeyName": {"default": "Key pair:"},
         "SSHLocation": {"default": "SSH From:"},
         "MasterS3Bucket": {"default": "Bootstrap bucket for VM-Series firewalls"},
-        "PanS3BucketTpl": {"default": "S3 Bucket Name for templates and AWS Lambda:"},
         "KeyPANWFirewall": {"default": "API Key for Firewall:"},
         "KeyPANWPanorama": {"default": "API Key for Panorama:"},
         "ELBName": {"default": "Name of External Load Balancer:"},
@@ -1822,7 +1815,7 @@
                "ScaleDownThreshold" : { "Ref" : "ScaleDownThreshold" },
                "ScalingParameter" : { "Ref" : "ScalingParameter" },
                "ScalingPeriod" : { "Ref" : "ScalingPeriod" },
-               "PanS3BucketTpl" : { "Ref" : "PanS3BucketTpl" },
+               "QSS3BucketName" : { "Ref" : "QSS3BucketName" },
                "KeyPANWFirewall" : { "Ref" : "KeyPANWFirewall" },
                "KeyPANWPanorama" : { "Ref" : "KeyPANWPanorama" },
                "NATGateway" : { "Ref" : "NATGateway" },
@@ -1871,7 +1864,7 @@
                "ScaleDownThreshold" : { "Ref" : "ScaleDownThreshold" },
                "ScalingParameter" : { "Ref" : "ScalingParameter" },
                "ScalingPeriod" : { "Ref" : "ScalingPeriod" },
-               "PanS3BucketTpl" : { "Ref" : "PanS3BucketTpl" },
+               "QSS3BucketName" : { "Ref" : "QSS3BucketName" },
                "KeyPANWFirewall" : { "Ref" : "KeyPANWFirewall" },
                "KeyPANWPanorama" : { "Ref" : "KeyPANWPanorama" },
                "NATGateway" : { "Ref" : "NATGateway" },
@@ -1917,7 +1910,7 @@
                "ScaleDownThreshold" : { "Ref" : "ScaleDownThreshold" },
                "ScalingParameter" : { "Ref" : "ScalingParameter" },
                "ScalingPeriod" : { "Ref" : "ScalingPeriod" },
-               "PanS3BucketTpl" : { "Ref" : "PanS3BucketTpl" },
+               "QSS3BucketName" : { "Ref" : "QSS3BucketName" },
                "KeyPANWFirewall" : { "Ref" : "KeyPANWFirewall" },
                "KeyPANWPanorama" : { "Ref" : "KeyPANWPanorama" },
                "NATGateway" : { "Ref" : "NATGateway" },
@@ -1965,7 +1958,7 @@
                "ScaleDownThreshold" : { "Ref" : "ScaleDownThreshold" },
                "ScalingParameter" : { "Ref" : "ScalingParameter" },
                "ScalingPeriod" : { "Ref" : "ScalingPeriod" },
-               "PanS3BucketTpl" : { "Ref" : "PanS3BucketTpl" },
+               "QSS3BucketName" : { "Ref" : "QSS3BucketName" },
                "KeyPANWFirewall" : { "Ref" : "KeyPANWFirewall" },
                "KeyPANWPanorama" : { "Ref" : "KeyPANWPanorama" },
                "NATGateway" : { "Ref" : "NATGateway" },
@@ -2011,7 +2004,7 @@
                "ScaleDownThreshold" : { "Ref" : "ScaleDownThreshold" },
                "ScalingParameter" : { "Ref" : "ScalingParameter" },
                "ScalingPeriod" : { "Ref" : "ScalingPeriod" },
-               "PanS3BucketTpl" : { "Ref" : "PanS3BucketTpl" },
+               "QSS3BucketName" : { "Ref" : "QSS3BucketName" },
                "KeyPANWFirewall" : { "Ref" : "KeyPANWFirewall" },
                "KeyPANWPanorama" : { "Ref" : "KeyPANWPanorama" },
                "NATGateway" : { "Ref" : "NATGateway" },
@@ -2059,7 +2052,7 @@
                "ScaleDownThreshold" : { "Ref" : "ScaleDownThreshold" },
                "ScalingParameter" : { "Ref" : "ScalingParameter" },
                "ScalingPeriod" : { "Ref" : "ScalingPeriod" },
-               "PanS3BucketTpl" : { "Ref" : "PanS3BucketTpl" },
+               "QSS3BucketName" : { "Ref" : "QSS3BucketName" },
                "KeyPANWFirewall" : { "Ref" : "KeyPANWFirewall" },
                "KeyPANWPanorama" : { "Ref" : "KeyPANWPanorama" },
                "NATGateway" : { "Ref" : "NATGateway" },
