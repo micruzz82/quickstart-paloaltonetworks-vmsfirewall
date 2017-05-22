@@ -103,10 +103,16 @@
       ],
       "Description": "Enter the instance type and size that you want for the AutoScaled VM-Series firewall"
     },
-    "PanFwAmiId": {
-    	"Type": "AWS::EC2::Image::Id",
-    	"Description": "Link to Ami Id lookup table: https://www.paloaltonetworks.com/documentation/global/compatibility-matrix/vm-series-firewalls/aws-cft-amazon-machine-images-ami-list"
-    },
+    "PanFWLicenseType": {
+      	"Description": "PANOS 8.0 License Type to select AMI Id",
+       	"Type": "String",
+        "AllowedValues": [
+            "Bring-your-own-license",
+            "Pay-as-you-go-bundle-1",
+            "Pay-as-you-go-bundle-2"
+        ],
+        "Default": "Pay-as-you-go-bundle-2"
+    }, 
     "KeyDeLicense": {
     	"Type": "String",
     	"Default": "",
@@ -163,7 +169,69 @@
     }
   },
   "Mappings": {
-    
+    	"AWSAMIRegionMap": {
+	      	"AMI": {
+	         	"PANFW8BYOL": "PA-VM-AWS-8.0.0-7064e142-2859-40a4-ab62-8b0996b842e9-ami-29de223f.3",
+	          	"PANFW8PAYG1": "PA-VM-AWS-8.0.0-6f2a9521-7dc3-46cc-8891-8c4d02d29666-ami-29de223f.3",
+	           	"PANFW8PAYG2": "PA-VM-AWS-8.0.0-8736f7a7-35b2-4e03-a8eb-6a749a987428-ami-29de223f.3"
+	       },
+	       "us-east-1": {
+	         	"PANFW8BYOL": "ami-f22cd7e4",
+	          	"PANFW8PAYG1": "ami-4222d954",
+	           	"PANFW8PAYG2": "ami-2127dc37"
+	       },
+	       "us-east-2": {
+	         	"PANFW8BYOL": "ami-360c2953",
+	          	"PANFW8PAYG1": "ami-0e0d286b",
+	           	"PANFW8PAYG2": "ami-810d28e4"
+	       },
+	       "us-west-1": {
+	         	"PANFW8BYOL": "ami-a1a5f8c1",
+	          	"PANFW8PAYG1": "ami-59a3fe39",
+	           	"PANFW8PAYG2": "ami-84a1fce4"
+	       },
+	       "us-west-2": {
+	         	"PANFW8BYOL": "ami-ca14afaa",
+	          	"PANFW8PAYG1": "ami-9c15aefc",
+	           	"PANFW8PAYG2": "ami-e614af86"
+	       },
+	       "eu-west-1": {
+	         	"PANFW8BYOL": "ami-32fca754",
+	          	"PANFW8PAYG1": "ami-abffa4cd",
+	           	"PANFW8PAYG2": "ami-43f1aa25"
+	       },
+	       "eu-central-1": {
+	         	"PANFW8BYOL": "ami-bb3af3d4",
+	          	"PANFW8PAYG1": "ami-e43df48b",
+	           	"PANFW8PAYG2": "ami-e93df486"
+	       },
+	       "ap-northeast-1": {
+	         	"PANFW8BYOL": "ami-a8bef8cf",
+	          	"PANFW8PAYG1": "ami-56bff931",
+	           	"PANFW8PAYG2": "ami-4bbcfa2c"
+	       },
+	       "ap-southeast-1": {
+	         	"PANFW8BYOL": "ami-55bb0f36",
+	          	"PANFW8PAYG1": "ami-a5bb0fc6",
+	           	"PANFW8PAYG2": "ami-17a41074"
+	       },
+	       "ap-southeast-2": {
+	         	"PANFW8BYOL": "ami-2f3e384c",
+	          	"PANFW8PAYG1": "ami-cc3335af",
+	           	"PANFW8PAYG2": "ami-10303673"
+	       }
+	    },
+	    "PanFWAMINameMap": {
+	      	 "Bring-your-own-license": {
+	          	"Code": "PANFW8BYOL"
+	        }, 
+	         "Pay-as-you-go-bundle-1": {
+	           	"Code": "PANFW8PAYG1"
+	         },
+	         "Pay-as-you-go-bundle-2": {
+	           	"Code": "PANFW8PAYG2"
+	         }
+	    }
   },
   "Conditions" : {
     "NATGatewayRequired": {"Fn::Equals": [{"Ref": "NATGateway"}, "Yes"]}
@@ -201,7 +269,7 @@
       },
       {
         "Label" : {"default": "VM-Series firewall Instance configuration"},
-        "Parameters" : ["FWInstanceType", "PanFwAmiId", "KeyName", "SSHLocation"]
+        "Parameters" : ["FWInstanceType", "PanFWLicenseType", "KeyName", "SSHLocation"]
       },
       {
         "Label" : {"default": "S3 Bucket details"},
@@ -233,7 +301,8 @@
       ],
       "ParameterLabels" : {
         "FWInstanceType": {"default": "Firewall Instance size:"},
-        "PanFwAmiId": {"default": "The Ami Id of the PAN FW Image"},
+        "PanFWLicenseType": {"default": "PAN Firewall 8.0 License Type"
+        }, 
         "KeyName": {"default": "Key pair:"},
         "SSHLocation": {"default": "SSH From:"},
         "MasterS3Bucket": {"default": "Bootstrap bucket for VM-Series firewalls"},
@@ -695,7 +764,22 @@
 	     "ScaleDownThreshold" : {"Ref": "ScaleDownThreshold"},
 	     "ScalingParameter" : {"Ref": "ScalingParameter"},
 	     "ScalingPeriod" : {"Ref": "ScalingPeriod"},
-	     "ImageID" : { "Ref": "PanFwAmiId" },
+	     "ImageID" : { 
+        	"Fn::FindInMap": [
+                "AWSAMIRegionMap",
+                {
+                    "Ref": "AWS::Region"
+                },
+                {
+                    "Fn::FindInMap": [
+                        "PanFWAMINameMap",
+                        {
+                            "Ref": "PanFWLicenseType"
+                        },
+                        "Code"
+                    ]
+                }
+            ] },
              "LambdaENISNSTopic": {"Ref": "LambdaENISNSTopic"},
              "MinInstancesASG": {"Ref": "MinInstancesASG"},
              "FirewallBootstrapRole": {"Ref": "FirewallBootstrapInstanceProfile"},

@@ -97,10 +97,16 @@
       ],
       "Description": "Enter the instance type and size that you want for VM-Series firewall"
     },
-    "PanFwAmiId": {
-    	"Type": "AWS::EC2::Image::Id",
-    	"Description": "Link to Ami Id lookup table: https://www.paloaltonetworks.com/documentation/global/compatibility-matrix/vm-series-firewalls/aws-cft-amazon-machine-images-ami-list"
-    },
+    "PanFWLicenseType": {
+      	"Description": "PANOS 8.0 License Type to select AMI Id",
+       	"Type": "String",
+        "AllowedValues": [
+            "Bring-your-own-license",
+            "Pay-as-you-go-bundle-1",
+            "Pay-as-you-go-bundle-2"
+        ],
+        "Default": "Pay-as-you-go-bundle-2"
+    }, 
     "ELBName": {
       "Type" : "String",
       "Description": "Enter the name of the External Classic Load Balancer",
@@ -212,7 +218,7 @@
       },
       {
         "Label" : {"default": "VM-Series Firewall Instance Configuration"},
-        "Parameters" : ["FWInstanceType", "PanFwAmiId", "KeyDeLicense", "KeyName", "SSHLocation"]
+        "Parameters" : ["FWInstanceType", "PanFWLicenseType", "KeyDeLicense", "KeyName", "SSHLocation"]
       },
       {
         "Label" : {"default": "S3 Bucket details"},
@@ -255,7 +261,6 @@
         "NATGWSubnetIpBlocks": {"default": "NAT Gateway Subnet CIDR Block:"},
         "LambdaSubnetIpBlocks": {"default": "Lambda Subnet CIDR Block:"},
         "FWInstanceType": {"default": "Firewall Instance size:"},
-        "PanFwAmiId": {"default": "The Ami Id of the PAN FW Image"},
         "KeyDeLicense": {"default": "Key used to de-license the FW"},
         "InstanceType": {"default": "Instance Type of Web Servers behind ILB:"},
         "KeyName": {"default": "Key pair:"},
@@ -1803,7 +1808,7 @@
                "MasterS3Bucket" : { "Ref" : "MasterS3Bucket" },
                "SSHLocation" : { "Ref" : "SSHLocation" },
                "FWInstanceType" : { "Ref" : "FWInstanceType" },
-               "PanFwAmiId": { "Ref": "PanFwAmiId" },
+               "PanFWLicenseType": { "Ref" : "PanFWLicenseType" },
                "VPCID" : { "Ref" : "VPC" },
                "AZSubnetIDMgmt" : { "Fn::Join": [ ",", [ { "Ref" : "MGMTSubnetAz1" }, { "Ref" : "MGMTSubnetAz2" } ] ] },
                "AZSubnetIDUntrust" : { "Fn::Join": [ ",", [ { "Ref" : "UNTRUSTSubnet1" }, { "Ref" : "UNTRUSTSubnet2" } ] ] },
@@ -1852,7 +1857,7 @@
                "MasterS3Bucket" : { "Ref" : "MasterS3Bucket" },
                "SSHLocation" : { "Ref" : "SSHLocation" },
                "FWInstanceType" : { "Ref" : "FWInstanceType" },
-               "PanFwAmiId": { "Ref": "PanFwAmiId" },
+               "PanFWLicenseType": { "Ref": "PanFWLicenseType" },
                "VPCID" : { "Ref" : "VPC" },
                "AZSubnetIDMgmt" : { "Fn::Join": [ ",", [ { "Ref" : "MGMTSubnetAz1" }, { "Ref" : "MGMTSubnetAz2" } ] ] },
                "AZSubnetIDUntrust" : { "Fn::Join": [ ",", [ { "Ref" : "UNTRUSTSubnet1" }, { "Ref" : "UNTRUSTSubnet2" } ] ] },
@@ -1897,7 +1902,7 @@
                "ELBName" :  { "Ref" : "ELBName" },
                "MasterS3Bucket" : { "Ref" : "MasterS3Bucket" },
                "FWInstanceType" : { "Ref" : "FWInstanceType" },
-               "PanFwAmiId": { "Ref": "PanFwAmiId" },
+               "PanFWLicenseType": { "Ref": "PanFWLicenseType" },
                "SSHLocation" : { "Ref" : "SSHLocation" },
                "VPCID" : { "Ref" : "VPC" },
                "AZSubnetIDMgmt" : { "Fn::Join": [ ",", [ { "Ref" : "MGMTSubnetAz1" }, { "Ref" : "MGMTSubnetAz2" }, { "Ref" : "MGMTSubnetAz3" } ] ] },
@@ -1945,7 +1950,7 @@
                "ELBName" :  { "Ref" : "ELBName" },
                "MasterS3Bucket" : { "Ref" : "MasterS3Bucket" },
                "FWInstanceType" : { "Ref" : "FWInstanceType" },
-               "PanFwAmiId": { "Ref": "PanFwAmiId" },
+               "PanFWLicenseType": { "Ref": "PanFWLicenseType" },
                "SSHLocation" : { "Ref" : "SSHLocation" },
                "VPCID" : { "Ref" : "VPC" },
                "AZSubnetIDMgmt" : { "Fn::Join": [ ",", [ { "Ref" : "MGMTSubnetAz1" }, { "Ref" : "MGMTSubnetAz2" }, { "Ref" : "MGMTSubnetAz3" } ] ] },
@@ -1991,7 +1996,7 @@
                "ELBName" :  { "Ref" : "ELBName" },
                "MasterS3Bucket" : { "Ref" : "MasterS3Bucket" },
                "FWInstanceType" : { "Ref" : "FWInstanceType" },
-               "PanFwAmiId": { "Ref": "PanFwAmiId" },
+               "PanFWLicenseType": { "Ref": "PanFWLicenseType" },
                "SSHLocation" : { "Ref" : "SSHLocation" },  
                "VPCID" : { "Ref" : "VPC" },
                "AZSubnetIDMgmt" : { "Fn::Join": [ ",", [ { "Ref" : "MGMTSubnetAz1" }, { "Ref" : "MGMTSubnetAz2" }, { "Ref" : "MGMTSubnetAz3" }, { "Ref" : "MGMTSubnetAz4" } ] ] },
@@ -2039,7 +2044,7 @@
                "ELBName" :  { "Ref" : "ELBName" },
                "MasterS3Bucket" : { "Ref" : "MasterS3Bucket" },
                "FWInstanceType" : { "Ref" : "FWInstanceType" },
-               "PanFwAmiId": { "Ref": "PanFwAmiId" },
+               "PanFWLicenseType": { "Ref": "PanFWLicenseType" },
                "SSHLocation" : { "Ref" : "SSHLocation" },
                "VPCID" : { "Ref" : "VPC" },
                "AZSubnetIDMgmt" : { "Fn::Join": [ ",", [ { "Ref" : "MGMTSubnetAz1" }, { "Ref" : "MGMTSubnetAz2" }, { "Ref" : "MGMTSubnetAz3" }, { "Ref" : "MGMTSubnetAz4" } ] ] },
