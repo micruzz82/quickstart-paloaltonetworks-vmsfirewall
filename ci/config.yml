@@ -1,17 +1,13 @@
 global:
-  marketplace-ami: false
+  marketplace-ami: true
   owner: quickstart-eng@amazon.com
-  qsname: quickstart-paloaltonetworks
+  qsname: quickstart-paloaltonetworks-vmsfirewall
   regions:
     - ap-northeast-1
-    - ap-northeast-2
-    - ap-south-1
     - ap-southeast-1
     - ap-southeast-2
-    - ca-central-1
     - eu-central-1
     - eu-west-1
-    - sa-east-1
     - us-east-1
     - us-east-2
     - us-west-1
@@ -20,8 +16,5 @@ global:
  
 tests:
   quickstart-paloaltonetworkst1:
-    parameter_input: quickstart-paloaltonetworks-example-params1.json
-    template_file: quickstart-paloaltonetworks-example1.template
-  quickstart-paloaltonetworkst2:
-    parameter_input: quickstart-paloaltonetworks-example-params2.json
-    template_file: quickstart-paloaltonetworks-example2.template
+    parameter_input: parameter.json
+    template_file: firewall-master.template

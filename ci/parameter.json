@@ -1,0 +1,14 @@
+[
+    {
+	    "ParameterKey": "AvailabilityZones",
+	    "ParameterValue": "$[alfred_genaz_2]"
+	},
+  	{
+	    "ParameterKey": "KeyName",
+	    "ParameterValue": "$[alfred_getkeypair]"
+	},
+	{
+        "ParameterKey": "MasterS3Bucket",
+        "ParameterValue": "quickstart-pan-fw-bootstrap"
+    }
+]
