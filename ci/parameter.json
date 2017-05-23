@@ -10,5 +10,9 @@
 	{
         "ParameterKey": "MasterS3Bucket",
         "ParameterValue": "quickstart-pan-fw-bootstrap"
+    },
+	{
+        "ParameterKey": "KeyPANWPanorama",
+        "ParameterValue": ""
     }
 ]
