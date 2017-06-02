@@ -995,7 +995,7 @@
                         "Ref": "QSS3BucketName"
                     },
                     "S3Key": {
-                        "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws.zip"
+                        "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
                     }
                 },
                 "Runtime": "python2.7",
@@ -1147,7 +1147,7 @@
                         "Ref": "QSS3BucketName"
                     },
                     "S3Key": {
-                        "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws.zip"
+                        "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
                     }
                 },
                 "Runtime": "python2.7",
@@ -1280,7 +1280,7 @@
                     "Ref": "QSS3BucketName"
                 },
                 "PanS3KeyTpl": {
-                    "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws.zip"
+                    "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
                 },
                 "KeyPANWFirewall": {
                     "Ref": "KeyPANWFirewall"
@@ -1304,7 +1304,7 @@
                     "Ref": "InitLambda"
                 },
                 "Version": {
-                    "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws.zip"
+                    "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
                 },
                 "KeyDeLicense": {
                     "Ref": "KeyDeLicense"

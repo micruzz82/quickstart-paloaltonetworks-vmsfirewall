@@ -2,6 +2,10 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Creates VPC, Subnets, Route Tables, SG, Classic ELBs, ASG for Webservers and Lambda Infrastructure for the VM-Series firewall",
     "Parameters": {
+        "AvailabilityZones": {
+            "Description": "Enter the list of Availability Zones (Based on Number of AZs above)",
+            "Type": "List<AWS::EC2::AvailabilityZone::Name>"
+        },
         "ELBName": {
             "Default": "public-elb",
             "Description": "Enter the name of the External Classic Load Balancer",
@@ -219,10 +223,6 @@
             "MaxLength": "24",
             "MinLength": "6",
             "Type": "String"
-        },
-        "AvailabilityZones": {
-            "Description": "Enter the list of Availability Zones (Based on Number of AZs above)",
-            "Type": "List<AWS::EC2::AvailabilityZone::Name>"
         }
     },
     "Metadata": {
@@ -308,6 +308,9 @@
                 }
             ],
             "ParameterLabels": {
+                "AvailabilityZones": {
+                    "default": "Select list of AZ:"
+                },
                 "ELBName": {
                     "default": "Name of External Load Balancer:"
                 },
@@ -388,9 +391,6 @@
                 },
                 "VPCName": {
                     "default": "VPC Name:"
-                },
-                "AvailabilityZones": {
-                    "default": "Select list of AZ:"
                 }
             }
         }
@@ -590,860 +590,6 @@
         }
     },
     "Resources": {
-      	"PublicLoadBalancerSecurityGroup": {
-            "Type": "AWS::EC2::SecurityGroup",
-            "Properties": {
-                "GroupDescription": "Public ELB Security Group with HTTP access on port 80 from the internet",
-                "VpcId": {
-                    "Fn::GetAtt": [
-	                    "VPCStack",
-	                    "Outputs.VPCID"
-                	]
-                },
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    },
-                                    "PublicLoadBalancerSecurityGroup"
-                                ]
-                            ]
-                        }
-                    }
-                ],
-                "SecurityGroupIngress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
-                        "CidrIp": "0.0.0.0/0"
-                    }
-                ],
-                "SecurityGroupEgress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
-                        "CidrIp": "0.0.0.0/0"
-                    }
-                ]
-            },
-            "DependsOn": [
-                "VPCStack"
-            ]
-        },
-        "PublicElasticLoadBalancer": {
-            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-            "Condition": "CreateSubnet2",
-            "Properties": {
-                "LoadBalancerName": {
-                    "Ref": "ELBName"
-                },
-                "SecurityGroups": [
-                    {
-                        "Ref": "PublicLoadBalancerSecurityGroup"
-                    }
-                ],
-                "Subnets": [
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.UNTRUSTSubnet1"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.UNTRUSTSubnet2"
-	                	]
-                    }
-                ],
-                "Listeners": [
-                    {
-                        "LoadBalancerPort": "80",
-                        "InstancePort": "80",
-                        "Protocol": "HTTP"
-                    }
-                ],
-                "ConnectionDrainingPolicy": {
-                    "Enabled": true,
-                    "Timeout": 300
-                },
-                "ConnectionSettings": {
-                    "IdleTimeout": 300
-                },
-                "CrossZone": true,
-                "HealthCheck": {
-                    "Target": "HTTP:80/index.html",
-                    "HealthyThreshold": "3",
-                    "UnhealthyThreshold": "5",
-                    "Interval": "30",
-                    "Timeout": "5"
-                }
-            },
-            "DependsOn": [
-                "VPCStack",
-                "PublicLoadBalancerSecurityGroup"
-            ]
-        },
-        "PublicElasticLoadBalancer3": {
-            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-            "Condition": "CreateSubnet3",
-            "Properties": {
-                "LoadBalancerName": {
-                    "Ref": "ELBName"
-                },
-                "SecurityGroups": [
-                    {
-                        "Ref": "PublicLoadBalancerSecurityGroup"
-                    }
-                ],
-                "Subnets": [
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.UNTRUSTSubnet1"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.UNTRUSTSubnet2"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.UNTRUSTSubnet3"
-	                	]
-                    }
-                ],
-                "Listeners": [
-                    {
-                        "LoadBalancerPort": "80",
-                        "InstancePort": "80",
-                        "Protocol": "HTTP"
-                    }
-                ],
-                "ConnectionDrainingPolicy": {
-                    "Enabled": true,
-                    "Timeout": 300
-                },
-                "ConnectionSettings": {
-                    "IdleTimeout": 300
-                },
-                "CrossZone": true,
-                "HealthCheck": {
-                    "Target": "HTTP:80/index.html",
-                    "HealthyThreshold": "3",
-                    "UnhealthyThreshold": "5",
-                    "Interval": "30",
-                    "Timeout": "5"
-                }
-            },
-            "DependsOn": [
-                "VPCStack",
-                "PublicLoadBalancerSecurityGroup"
-            ]
-        },
-        "PrivateLoadBalancerSecurityGroup": {
-            "Type": "AWS::EC2::SecurityGroup",
-            "Properties": {
-                "GroupDescription": "Private ELB Security Group with HTTP access on port 80 from the VM-Series firewall fleet ",
-                "VpcId": {
-                    "Fn::GetAtt": [
-	                    "VPCStack",
-	                    "Outputs.VPCID"
-                	]
-                },
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    },
-                                    "PrivateLoadBalancerSecurityGroup"
-                                ]
-                            ]
-                        }
-                    }
-                ],
-                "SecurityGroupIngress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
-                        "CidrIp": "0.0.0.0/0"
-                    }
-                ],
-                "SecurityGroupEgress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
-                        "CidrIp": "0.0.0.0/0"
-                    }
-                ]
-            },
-            "DependsOn": [
-                "VPCStack"
-            ]
-        },
-        "PrivateElasticLoadBalancer": {
-            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-            "Condition": "CreateSubnet2",
-            "Properties": {
-                "LoadBalancerName": {
-                    "Ref": "ILBName"
-                },
-                "SecurityGroups": [
-                    {
-                        "Ref": "PrivateLoadBalancerSecurityGroup"
-                    }
-                ],
-                "Subnets": [
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet1"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet2"
-	                	]
-                    }
-                ],
-                "Listeners": [
-                    {
-                        "LoadBalancerPort": "80",
-                        "InstancePort": "80",
-                        "Protocol": "HTTP"
-                    }
-                ],
-                "Scheme": "internal",
-                "ConnectionDrainingPolicy": {
-                    "Enabled": true,
-                    "Timeout": 300
-                },
-                "ConnectionSettings": {
-                    "IdleTimeout": 300
-                },
-                "HealthCheck": {
-                    "Target": "HTTP:80/index.html",
-                    "HealthyThreshold": "3",
-                    "UnhealthyThreshold": "5",
-                    "Interval": "30",
-                    "Timeout": "5"
-                }
-            },
-            "DependsOn": [
-                "VPCStack",
-                "PrivateLoadBalancerSecurityGroup"
-            ]
-        },
-        "PrivateElasticLoadBalancer3": {
-            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-            "Condition": "CreateSubnet3",
-            "Properties": {
-                "LoadBalancerName": {
-                    "Ref": "ILBName"
-                },
-                "SecurityGroups": [
-                    {
-                        "Ref": "PrivateLoadBalancerSecurityGroup"
-                    }
-                ],
-                "Subnets": [
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet1"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet2"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet3"
-	                	]
-                    }
-                ],
-                "Listeners": [
-                    {
-                        "LoadBalancerPort": "80",
-                        "InstancePort": "80",
-                        "Protocol": "HTTP"
-                    }
-                ],
-                "Scheme": "internal",
-                "ConnectionDrainingPolicy": {
-                    "Enabled": true,
-                    "Timeout": 300
-                },
-                "ConnectionSettings": {
-                    "IdleTimeout": 300
-                },
-                "HealthCheck": {
-                    "Target": "HTTP:80/index.html",
-                    "HealthyThreshold": "3",
-                    "UnhealthyThreshold": "5",
-                    "Interval": "30",
-                    "Timeout": "5"
-                }
-            },
-            "DependsOn": [
-                "VPCStack",
-                "PrivateLoadBalancerSecurityGroup"
-            ]
-        },
-        "WebServerSecurityGroup": {
-            "Type": "AWS::EC2::SecurityGroup",
-            "Properties": {
-                "VpcId": {
-                    "Fn::GetAtt": [
-	                    "VPCStack",
-	                    "Outputs.VPCID"
-                	]
-                },
-                "GroupDescription": "Allow access from HTTP and SSH traffic",
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    },
-                                    "WebServerSecurityGroup"
-                                ]
-                            ]
-                        }
-                    }
-                ],
-                "SecurityGroupIngress": [
-                    {
-                        "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
-                        }
-                    },
-                    {
-                        "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
-                        "CidrIp": {
-                            "Ref": "VPCCIDR"
-                        }
-                    }
-                ]
-            }
-        },
-        "WebServerGroup": {
-            "Type": "AWS::AutoScaling::AutoScalingGroup",
-            "Condition": "CreateSubnet2",
-            "DependsOn": [
-                "VPCStack",
-                "WebServerLaunchConfig"
-            ],
-            "Properties": {
-                "AvailabilityZones": [
-                    {
-                        "Fn::Select": [
-                            "0",
-                            {
-                                "Ref": "AvailabilityZones"
-                            }
-                        ]
-                    },
-                    {
-                        "Fn::Select": [
-                            "1",
-                            {
-                                "Ref": "AvailabilityZones"
-                            }
-                        ]
-                    }
-                ],
-                "LaunchConfigurationName": {
-                    "Ref": "WebServerLaunchConfig"
-                },
-                "MinSize": "2",
-                "MaxSize": "6",
-                "LoadBalancerNames": [
-                    {
-                        "Ref": "PrivateElasticLoadBalancer"
-                    }
-                ],
-                "VPCZoneIdentifier": [
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet1"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet2"
-	                	]
-                    }
-                ],
-                "Tags": [
-                    {
-                        "ResourceType": "auto-scaling-group",
-                        "ResourceId": "WebServerGroup",
-                        "PropagateAtLaunch": true,
-                        "Value": {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    },
-                                    "WebServerGroup"
-                                ]
-                            ]
-                        },
-                        "Key": "Name"
-                    }
-                ]
-            }
-        },
-        "WebServerGroup3": {
-            "Type": "AWS::AutoScaling::AutoScalingGroup",
-            "Condition": "CreateSubnet3",
-            "DependsOn": [
-                "VPCStack",
-                "WebServerLaunchConfig"
-            ],
-            "Properties": {
-                "AvailabilityZones": [
-                    {
-                        "Fn::Select": [
-                            "0",
-                            {
-                                "Ref": "AvailabilityZones"
-                            }
-                        ]
-                    },
-                    {
-                        "Fn::Select": [
-                            "1",
-                            {
-                                "Ref": "AvailabilityZones"
-                            }
-                        ]
-                    },
-                    {
-                        "Fn::Select": [
-                            "2",
-                            {
-                                "Ref": "AvailabilityZones"
-                            }
-                        ]
-                    }
-                ],
-                "LaunchConfigurationName": {
-                    "Ref": "WebServerLaunchConfig"
-                },
-                "MinSize": "3",
-                "MaxSize": "9",
-                "LoadBalancerNames": [
-                    {
-                        "Ref": "PrivateElasticLoadBalancer3"
-                    }
-                ],
-                "VPCZoneIdentifier": [
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet1"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet2"
-	                	]
-                    },
-                    {
-                        "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.TRUSTSubnet3"
-	                	]
-                    }
-                ],
-                "Tags": [
-                    {
-                        "ResourceType": "auto-scaling-group",
-                        "ResourceId": "WebServerGroup3",
-                        "PropagateAtLaunch": true,
-                        "Value": {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    },
-                                    "WebServerGroup3"
-                                ]
-                            ]
-                        },
-                        "Key": "Name"
-                    }
-                ]
-            }
-        },
-        "WebServerLaunchConfig": {
-            "Type": "AWS::AutoScaling::LaunchConfiguration",
-            "DependsOn": [
-                "VPCStack"
-            ],
-            "Metadata": {
-                "Comment": "Install a simple application",
-                "AWS::CloudFormation::Init": {
-                    "config": {
-                        "packages": {
-                            "yum": {
-                                "httpd": []
-                            }
-                        },
-                        "files": {
-                            "/var/www/html/index.html": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "<img src=\"https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/pan-logo-badge-blue-medium-kick-up.png\" alt=\"VM-Series CloudFormation\"/>",
-                                            "<h1>Congratulations, you have successfully launched VM-Series ASG CloudFormation. This file is coming from Webserver Region:",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            "</h1>",
-                                            "<h1>StackID: ",
-                                            {
-                                                "Ref": "AWS::StackId"
-                                            },
-                                            "</h1>",
-                                            "<h1>StackName: ",
-                                            {
-                                                "Ref": "AWS::StackName"
-                                            },
-                                            "</h1>",
-                                            "<h1>AccountID: ",
-                                            {
-                                                "Ref": "AWS::AccountId"
-                                            },
-                                            "</h1>",
-                                            "<h1>This templates creates - VPC, Subnets, Route Tables, Webservers ASG, Lambda Infra </h1>"
-                                        ]
-                                    ]
-                                },
-                                "mode": "000644",
-                                "owner": "root",
-                                "group": "root"
-                            },
-                            "/etc/cfn/cfn-hup.conf": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "[main]\n",
-                                            "stack=",
-                                            {
-                                                "Ref": "AWS::StackId"
-                                            },
-                                            "\n",
-                                            "region=",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            "\n"
-                                        ]
-                                    ]
-                                },
-                                "mode": "000400",
-                                "owner": "root",
-                                "group": "root"
-                            },
-                            "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "[cfn-auto-reloader-hook]\n",
-                                            "triggers=post.update\n",
-                                            "path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init\n",
-                                            "action=/opt/aws/bin/cfn-init -v ",
-                                            "         --stack ",
-                                            {
-                                                "Ref": "AWS::StackName"
-                                            },
-                                            "         --resource LaunchConfig ",
-                                            "         --region ",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            "\n",
-                                            "runas=root\n"
-                                        ]
-                                    ]
-                                }
-                            }
-                        },
-                        "services": {
-                            "sysvinit": {
-                                "httpd": {
-                                    "enabled": "true",
-                                    "ensureRunning": "true"
-                                },
-                                "cfn-hup": {
-                                    "enabled": "true",
-                                    "ensureRunning": "true",
-                                    "files": [
-                                        "/etc/cfn/cfn-hup.conf",
-                                        "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "Properties": {
-                "KeyName": {
-                    "Ref": "KeyName"
-                },
-                "AssociatePublicIpAddress": "true",
-                "ImageId": {
-                    "Fn::FindInMap": [
-                        "AWSAMIRegionMap",
-                        {
-                            "Ref": "AWS::Region"
-                        },
-                        "AMZNLINUXHVM"
-                    ]
-                },
-                "SecurityGroups": [
-                    {
-                        "Ref": "WebServerSecurityGroup"
-                    }
-                ],
-                "InstanceType": {
-                    "Ref": "InstanceType"
-                },
-                "UserData": {
-                    "Fn::Base64": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                "#!/bin/bash -xe\n",
-                                "yum update -y aws-cfn-bootstrap\n",
-                                "/opt/aws/bin/cfn-init -v ",
-                                "         --stack ",
-                                {
-                                    "Ref": "AWS::StackName"
-                                },
-                                "         --resource WebServerLaunchConfig",
-                                "         --region ",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                "\n",
-                                "# Signal completion\n",
-                                "/opt/aws/bin/cfn-signal -e $? ",
-                                "  --stack ",
-                                {
-                                    "Ref": "AWS::StackName"
-                                },
-                                "  --resource WebServerGroup",
-                                "  --region ",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                "\n"
-                            ]
-                        ]
-                    }
-                }
-            }
-        },
-        "WebServerScaleUpPolicy": {
-            "Type": "AWS::AutoScaling::ScalingPolicy",
-            "Condition": "CreateSubnet2",
-            "Properties": {
-                "AdjustmentType": "ChangeInCapacity",
-                "AutoScalingGroupName": {
-                    "Ref": "WebServerGroup"
-                },
-                "Cooldown": "60",
-                "ScalingAdjustment": "1"
-            }
-        },
-        "WebServerScaleDownPolicy": {
-            "Type": "AWS::AutoScaling::ScalingPolicy",
-            "Condition": "CreateSubnet2",
-            "Properties": {
-                "AdjustmentType": "ChangeInCapacity",
-                "AutoScalingGroupName": {
-                    "Ref": "WebServerGroup"
-                },
-                "Cooldown": "60",
-                "ScalingAdjustment": "-1"
-            }
-        },
-        "WebServerScaleUpPolicy3": {
-            "Type": "AWS::AutoScaling::ScalingPolicy",
-            "Condition": "CreateSubnet3",
-            "Properties": {
-                "AdjustmentType": "ChangeInCapacity",
-                "AutoScalingGroupName": {
-                    "Ref": "WebServerGroup3"
-                },
-                "Cooldown": "60",
-                "ScalingAdjustment": "1"
-            }
-        },
-        "WebServerScaleDownPolicy3": {
-            "Type": "AWS::AutoScaling::ScalingPolicy",
-            "Condition": "CreateSubnet3",
-            "Properties": {
-                "AdjustmentType": "ChangeInCapacity",
-                "AutoScalingGroupName": {
-                    "Ref": "WebServerGroup3"
-                },
-                "Cooldown": "60",
-                "ScalingAdjustment": "-1"
-            }
-        },
-        "CPUAlarmHigh": {
-            "Type": "AWS::CloudWatch::Alarm",
-            "Condition": "CreateSubnet2",
-            "Properties": {
-                "AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
-                "MetricName": "CPUUtilization",
-                "Namespace": "AWS/EC2",
-                "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "90",
-                "AlarmActions": [
-                    {
-                        "Ref": "WebServerScaleUpPolicy"
-                    }
-                ],
-                "Dimensions": [
-                    {
-                        "Name": "AutoScalingGroupName",
-                        "Value": {
-                            "Ref": "WebServerGroup"
-                        }
-                    }
-                ],
-                "ComparisonOperator": "GreaterThanThreshold"
-            }
-        },
-        "CPUAlarmLow": {
-            "Type": "AWS::CloudWatch::Alarm",
-            "Condition": "CreateSubnet2",
-            "Properties": {
-                "AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
-                "MetricName": "CPUUtilization",
-                "Namespace": "AWS/EC2",
-                "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "70",
-                "AlarmActions": [
-                    {
-                        "Ref": "WebServerScaleDownPolicy"
-                    }
-                ],
-                "Dimensions": [
-                    {
-                        "Name": "AutoScalingGroupName",
-                        "Value": {
-                            "Ref": "WebServerGroup"
-                        }
-                    }
-                ],
-                "ComparisonOperator": "LessThanThreshold"
-            }
-        },
-        "CPUAlarmHigh3": {
-            "Type": "AWS::CloudWatch::Alarm",
-            "Condition": "CreateSubnet3",
-            "Properties": {
-                "AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
-                "MetricName": "CPUUtilization",
-                "Namespace": "AWS/EC2",
-                "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "90",
-                "AlarmActions": [
-                    {
-                        "Ref": "WebServerScaleUpPolicy3"
-                    }
-                ],
-                "Dimensions": [
-                    {
-                        "Name": "AutoScalingGroupName",
-                        "Value": {
-                            "Ref": "WebServerGroup3"
-                        }
-                    }
-                ],
-                "ComparisonOperator": "GreaterThanThreshold"
-            }
-        },
-        "CPUAlarmLow3": {
-            "Type": "AWS::CloudWatch::Alarm",
-            "Condition": "CreateSubnet3",
-            "Properties": {
-                "AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
-                "MetricName": "CPUUtilization",
-                "Namespace": "AWS/EC2",
-                "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "70",
-                "AlarmActions": [
-                    {
-                        "Ref": "WebServerScaleDownPolicy3"
-                    }
-                ],
-                "Dimensions": [
-                    {
-                        "Name": "AutoScalingGroupName",
-                        "Value": {
-                            "Ref": "WebServerGroup3"
-                        }
-                    }
-                ],
-                "ComparisonOperator": "LessThanThreshold"
-            }
-        },
         "VPCStack": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
@@ -1528,6 +674,220 @@
                 }
             }
         },
+        "WebserverStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "CreateSubnet2",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": [
+                        "https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/webserver.template",
+                        {
+                            "QSS3Region": {
+                                "Fn::If": [
+                                    "GovCloudCondition",
+                                    "s3-us-gov-west-1",
+                                    "s3"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Parameters": {
+                    "AvailabilityZones": {
+                        "Fn::Join": [
+                            ",",
+                            {
+                                "Ref": "AvailabilityZones"
+                            }
+                        ]
+                    },
+                    "NumberOfAZs": {
+                        "Ref": "NumberOfAZs"
+                    },
+                    "VPCCIDR": {
+                        "Ref": "VPCCIDR"
+                    },
+                    "ILBName": {
+                        "Ref": "ILBName"
+                    },
+                    "ELBName": {
+                        "Ref": "ELBName"
+                    },
+                    "SSHLocation": {
+                        "Ref": "SSHLocation"
+                    },
+                    "VPCID": {
+                        "Fn::GetAtt": [
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
+                    },
+                    "AZSubnetIDUntrust": {
+                        "Fn::Join": [
+                            ",",
+                            [
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
+                                },
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
+                                }
+                            ]
+                        ]
+                    },
+                    "AZSubnetIDTrust": {
+                        "Fn::Join": [
+                            ",",
+                            [
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
+                                },
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
+                                }
+                            ]
+                        ]
+                    },
+                    "KeyName": {
+                        "Ref": "KeyName"
+                    },
+                    "NATGateway": {
+                        "Ref": "NATGateway"
+                    },
+                    "InstanceType": {
+                        "Ref": "InstanceType"
+                    }
+                }
+            },
+            "DependsOn": [
+                "VPCStack"
+            ]
+        },
+        "WebserverStack3": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "CreateSubnet3",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": [
+                        "https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/webserver.template",
+                        {
+                            "QSS3Region": {
+                                "Fn::If": [
+                                    "GovCloudCondition",
+                                    "s3-us-gov-west-1",
+                                    "s3"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Parameters": {
+                    "AvailabilityZones": {
+                        "Fn::Join": [
+                            ",",
+                            {
+                                "Ref": "AvailabilityZones"
+                            }
+                        ]
+                    },
+                    "NumberOfAZs": {
+                        "Ref": "NumberOfAZs"
+                    },
+                    "VPCCIDR": {
+                        "Ref": "VPCCIDR"
+                    },
+                    "ILBName": {
+                        "Ref": "ILBName"
+                    },
+                    "ELBName": {
+                        "Ref": "ELBName"
+                    },
+                    "SSHLocation": {
+                        "Ref": "SSHLocation"
+                    },
+                    "VPCID": {
+                        "Fn::GetAtt": [
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
+                    },
+                    "AZSubnetIDUntrust": {
+                        "Fn::Join": [
+                            ",",
+                            [
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
+                                },
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
+                                },
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet3"
+                                    ]
+                                }
+                            ]
+                        ]
+                    },
+                    "AZSubnetIDTrust": {
+                        "Fn::Join": [
+                            ",",
+                            [
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
+                                },
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
+                                },
+                                {
+                                    "Fn::GetAtt": [
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet3"
+                                    ]
+                                }
+                            ]
+                        ]
+                    },
+                    "KeyName": {
+                        "Ref": "KeyName"
+                    },
+                    "NATGateway": {
+                        "Ref": "NATGateway"
+                    },
+                    "InstanceType": {
+                        "Ref": "InstanceType"
+                    }
+                }
+            },
+            "DependsOn": [
+                "VPCStack"
+            ]
+        },
         "az2n": {
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "NATGatewayRequired2",
@@ -1570,9 +930,9 @@
                     },
                     "VPCID": {
                         "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.VPCID"
-	                	]
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
                     },
                     "AZSubnetIDMgmt": {
                         "Fn::Join": [
@@ -1580,15 +940,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1599,15 +959,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1618,15 +978,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1670,15 +1030,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1689,15 +1049,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1709,8 +1069,7 @@
             },
             "DependsOn": [
                 "VPCStack",
-                "PublicElasticLoadBalancer",
-                "PrivateElasticLoadBalancer"
+                "WebserverStack"
             ]
         },
         "az2": {
@@ -1718,8 +1077,7 @@
             "Condition": "NATGatewayNotRequired2",
             "DependsOn": [
                 "VPCStack",
-                "PrivateElasticLoadBalancer",
-                "PublicElasticLoadBalancer"
+                "WebserverStack"
             ],
             "Properties": {
                 "TemplateURL": {
@@ -1760,9 +1118,9 @@
                     },
                     "VPCID": {
                         "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.VPCID"
-	                	]
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
                     },
                     "AZSubnetIDMgmt": {
                         "Fn::Join": [
@@ -1770,15 +1128,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1789,15 +1147,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1808,15 +1166,15 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
                                 }
                             ]
                         ]
@@ -1865,8 +1223,7 @@
             "Condition": "NATGatewayRequired3",
             "DependsOn": [
                 "VPCStack",
-                "PrivateElasticLoadBalancer3",
-                "PublicElasticLoadBalancer3"
+                "WebserverStack3"
             ],
             "Properties": {
                 "TemplateURL": {
@@ -1907,9 +1264,9 @@
                     },
                     "VPCID": {
                         "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.VPCID"
-	                	]
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
                     },
                     "AZSubnetIDMgmt": {
                         "Fn::Join": [
@@ -1917,21 +1274,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz3"
+                                    ]
                                 }
                             ]
                         ]
@@ -1942,21 +1299,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet3"
+                                    ]
                                 }
                             ]
                         ]
@@ -1967,21 +1324,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet3"
+                                    ]
                                 }
                             ]
                         ]
@@ -2025,21 +1382,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz3"
+                                    ]
                                 }
                             ]
                         ]
@@ -2050,21 +1407,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz3"
+                                    ]
                                 }
                             ]
                         ]
@@ -2080,8 +1437,7 @@
             "Condition": "NATGatewayNotRequired3",
             "DependsOn": [
                 "VPCStack",
-                "PrivateElasticLoadBalancer3",
-                "PublicElasticLoadBalancer3"
+                "WebserverStack3"
             ],
             "Properties": {
                 "TemplateURL": {
@@ -2122,9 +1478,9 @@
                     },
                     "VPCID": {
                         "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.VPCID"
-	                	]
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
                     },
                     "AZSubnetIDMgmt": {
                         "Fn::Join": [
@@ -2132,21 +1488,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz3"
+                                    ]
                                 }
                             ]
                         ]
@@ -2157,21 +1513,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet3"
+                                    ]
                                 }
                             ]
                         ]
@@ -2182,21 +1538,21 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet3"
+                                    ]
                                 }
                             ]
                         ]
@@ -2285,9 +1641,9 @@
                     },
                     "VPCID": {
                         "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.VPCID"
-	                	]
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
                     },
                     "AZSubnetIDMgmt": {
                         "Fn::Join": [
@@ -2295,27 +1651,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2326,27 +1682,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2357,27 +1713,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2421,27 +1777,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.NATGWSubnetAz4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.NATGWSubnetAz4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2452,27 +1808,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.LambdaSubnetAz4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.LambdaSubnetAz4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2528,9 +1884,9 @@
                     },
                     "VPCID": {
                         "Fn::GetAtt": [
-		                    "VPCStack",
-		                    "Outputs.VPCID"
-	                	]
+                            "VPCStack",
+                            "Outputs.VPCID"
+                        ]
                     },
                     "AZSubnetIDMgmt": {
                         "Fn::Join": [
@@ -2538,27 +1894,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.MGMTSubnetAz4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.MGMTSubnetAz4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2569,27 +1925,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.UNTRUSTSubnet4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.UNTRUSTSubnet4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2600,27 +1956,27 @@
                             [
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet1"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet1"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet2"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet2"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet3"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet3"
+                                    ]
                                 },
                                 {
                                     "Fn::GetAtt": [
-					                    "VPCStack",
-					                    "Outputs.TRUSTSubnet4"
-				                	]
+                                        "VPCStack",
+                                        "Outputs.TRUSTSubnet4"
+                                    ]
                                 }
                             ]
                         ]
@@ -2679,14 +2035,14 @@
                     "CreateSubnet2",
                     {
                         "Fn::GetAtt": [
-                            "PublicElasticLoadBalancer",
-                            "CanonicalHostedZoneName"
+                            "WebserverStack",
+                            "Outputs.DNSNamePublicELB"
                         ]
                     },
                     {
                         "Fn::GetAtt": [
-                            "PublicElasticLoadBalancer3",
-                            "CanonicalHostedZoneName"
+                            "WebserverStack3",
+                            "Outputs.DNSNamePublicELB"
                         ]
                     }
                 ]
