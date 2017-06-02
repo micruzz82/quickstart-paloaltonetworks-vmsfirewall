@@ -669,7 +669,9 @@
                         "IpProtocol": "-1",
                         "FromPort": "-1",
                         "ToPort": "-1",
-                        "CidrIp": "0.0.0.0/0"
+                        "CidrIp": {
+                          	"Ref": "VPCCIDR"
+                        }
                     }
                 ],
                 "SecurityGroupEgress": [
@@ -710,7 +712,9 @@
                         "IpProtocol": "-1",
                         "FromPort": "-1",
                         "ToPort": "-1",
-                        "CidrIp": "0.0.0.0/0"
+                        "CidrIp": {
+                          	"Ref": "VPCCIDR"
+                        }
                     }
                 ],
                 "SecurityGroupEgress": [
