@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "VM-Series Firewall Deployment template",
+    "Description": "VM-Series Firewall Deployment template (qs-1ndtndsoc)",
     "Parameters": {
         "AZSubnetIDLambda": {
             "Default": "None",
