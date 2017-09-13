@@ -2902,25 +2902,27 @@
         },
         "LambdaSubnetAz1": {
             "Description": "Lambda subnet 1 Id",
+            "Condition": "NATGatewayRequired",
             "Value": {
                 "Ref": "LambdaSubnetAz1"
             }
         },
         "LambdaSubnetAz2": {
             "Description": "Lambda subnet 2 Id",
+            "Condition": "NATGatewayRequired",
             "Value": {
                 "Ref": "LambdaSubnetAz2"
             }
         },
         "LambdaSubnetAz3": {
-            "Condition": "CreateSubnet3",
+            "Condition": "NATGatewayRequired3",
             "Description": "Lambda subnet 3 Id",
             "Value": {
                 "Ref": "LambdaSubnetAz3"
             }
         },
         "LambdaSubnetAz4": {
-            "Condition": "CreateSubnet4",
+            "Condition": "NATGatewayRequired4",
             "Description": "Lambda subnet 4 Id",
             "Value": {
                 "Ref": "LambdaSubnetAz4"
@@ -2953,26 +2955,28 @@
             }
         },
         "NATGWSubnetAz1": {
+        	"Condition": "NATGatewayRequired",
             "Description": "NAT gateway subnet 1 Id",
             "Value": {
                 "Ref": "NATGWSubnetAz1"
             }
         },
         "NATGWSubnetAz2": {
+        	"Condition": "NATGatewayRequired",
             "Description": "NAT gateway subnet 2 Id",
             "Value": {
                 "Ref": "NATGWSubnetAz2"
             }
         },
         "NATGWSubnetAz3": {
-            "Condition": "CreateSubnet3",
+            "Condition": "NATGatewayRequired3",
             "Description": "NAT gateway subnet 3 Id",
             "Value": {
                 "Ref": "NATGWSubnetAz3"
             }
         },
         "NATGWSubnetAz4": {
-            "Condition": "CreateSubnet4",
+            "Condition": "NATGatewayRequired4",
             "Description": "NAT gateway subnet 4 Id",
             "Value": {
                 "Ref": "NATGWSubnetAz4"
