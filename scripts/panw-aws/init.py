@@ -120,6 +120,10 @@ def send_response(event, context, responseStatus):
         connection.close()
         return 'true'
 
+def get_lambda_func_name(stackname):
+    name = stackname + '-lambda-sched-event'
+    return name[-63:len(name)]
+
 def get_event_rule_name(stackname):
     name = stackname + 'event-rule-init-lambda'
     return name[-63:len(name)]
@@ -178,7 +182,7 @@ def delete_load_balancers(r):
         logger.error("Delete ILB FAILED")
 
 def remove_sched_func(stackname):
-    lambda_func_name= stackname + '-lambda-sched-event'
+    lambda_func_name= get_lambda_func_name(stackname)
     event_rule_name= get_event_rule_name(stackname)
     target_id_name = get_target_id_name(stackname)
     try:
@@ -674,7 +678,7 @@ def create_resources(event):
     #time.sleep(5)
     logger.info('Getting IAM role')
     lambda_exec_role_arn = iam.get_role(RoleName=lambda_exec_role_name).get('Role').get('Arn')
-    lambda_func_name= stackname + '-lambda-sched-event'
+    lambda_func_name= get_lambda_func_name(stackname)
     logger.info('creating lambda function: ' + lambda_func_name)
     response = lambda_client.create_function(
             FunctionName=lambda_func_name,
@@ -931,7 +935,7 @@ def lambda_handler(event, context):
                 # Fix when this Quick Start is called from aother Quick Start as submodule
                 if "FirewallMasterStack" in sl[0]:
                     temp=sl[0].split("-FirewallMasterStack-")
-                    print('stackname list items: ' + temp)
+                    print(temp)
                 print('Length of stackname is: ' + str(len(temp[0])))
                 
                 if len(temp[0]) > 10:
