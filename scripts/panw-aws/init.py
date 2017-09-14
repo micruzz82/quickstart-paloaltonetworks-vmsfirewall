@@ -928,7 +928,11 @@ def lambda_handler(event, context):
                 print('AZ name code is: ' + name)
                 sl=stackname.split(name)
                 print(sl)
+                # Fix when this Quick Start is called from aother Quick Start as submodule
+                if "FirewallMasterStack" in sl:
+                    sl=sl.split("-FirewallMasterStack-")
                 print('Length of stackname is: ' + str(len(sl[0])))
+                
                 if len(sl[0]) > 10:
                     logger.error('[ERROR]: We dont support Stack Name more than 10 characters long...')
                     send_response(event, context, "FAILURE: We dont support Stack Name more than 10 characters long")
