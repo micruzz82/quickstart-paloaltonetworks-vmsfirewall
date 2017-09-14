@@ -3033,6 +3033,12 @@
             "Value": {
                 "Ref": "TRUSTSubnet4"
             }
+        },
+        "InternetGatewayId": {
+            "Description": "Internet Gateway Id",
+            "Value": {
+                "Ref": "InternetGateway"
+            }
         }
     }
 }
