@@ -287,6 +287,8 @@
                 "CidrBlock": {
                     "Ref": "VPCCIDR"
                 },
+                "EnableDnsSupport" : "true",
+    	    	"EnableDnsHostnames" : "true",
                 "Tags": [
                     {
                         "Key": "Application",
