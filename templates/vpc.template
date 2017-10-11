@@ -2627,6 +2627,204 @@
                 "VPC"
             ]
         },
+        "TRUSTRouteTableAz1": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "TRUSTRouteTableAz1"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "VPC"
+            ]
+        },
+        "TRUSTRouteTableAz2": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "TRUSTRouteTableAz2"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "VPC"
+            ]
+        },
+        "TRUSTRouteTableAz3": {
+            "Type": "AWS::EC2::RouteTable",
+            "Condition": "CreateSubnet3",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "TRUSTRouteTableAz3"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "VPC"
+            ]
+        },
+        "TRUSTRouteTableAz4": {
+            "Type": "AWS::EC2::RouteTable",
+            "Condition": "CreateSubnet4",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "TRUSTRouteTableAz4"
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "VPC"
+            ]
+        },
+        "TRUSTRouteNAT1": {
+            "Type": "AWS::EC2::Route",
+            "Condition": "NATGatewayRequired",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz1"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "NAT1"
+                }
+            },
+            "DependsOn": [
+                "NAT1"
+            ]
+        },
+        "TRUSTRouteNAT2": {
+            "Type": "AWS::EC2::Route",
+            "Condition": "NATGatewayRequired",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz2"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "NAT2"
+                }
+            },
+            "DependsOn": [
+                "NAT2"
+            ]
+        },
+        "TRUSTRouteNAT3": {
+            "Type": "AWS::EC2::Route",
+            "Condition": "NATGatewayRequired3",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz3"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "NAT3"
+                }
+            },
+            "DependsOn": [
+                "NAT3"
+            ]
+        },
+        "TRUSTRouteNAT4": {
+            "Type": "AWS::EC2::Route",
+            "Condition": "NATGatewayRequired4",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz4"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "NAT4"
+                }
+            },
+            "DependsOn": [
+                "NAT4"
+            ]
+        },
         "TRUSTRoute": {
             "Type": "AWS::EC2::Route",
             "Properties": {
@@ -2700,6 +2898,70 @@
             },
             "DependsOn": [
                 "TRUSTSubnet4"
+            ]
+        },
+        "TRUSTSubnetRouteTableAssociationNAT1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Condition": "NATGatewayRequired",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "TRUSTSubnet1"
+                },
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz1"
+                }
+            },
+            "DependsOn": [
+                "TRUSTSubnet1",
+                "TRUSTRouteNAT1"
+            ]
+        },
+        "TRUSTSubnetRouteTableAssociationNAT2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Condition": "NATGatewayRequired",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "TRUSTSubnet2"
+                },
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz2"
+                }
+            },
+            "DependsOn": [
+                "TRUSTSubnet2",
+                "TRUSTRouteNAT2"
+            ]
+        },
+        "TRUSTSubnetRouteTableAssociationNAT3": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Condition": "NATGatewayRequired3",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "TRUSTSubnet3"
+                },
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz3"
+                }
+            },
+            "DependsOn": [
+                "TRUSTSubnet3",
+                "TRUSTRouteNAT3"
+            ]
+        },
+        "TRUSTSubnetRouteTableAssociationNAT4": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Condition": "NATGatewayRequired4",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "TRUSTSubnet4"
+                },
+                "RouteTableId": {
+                    "Ref": "TRUSTRouteTableAz4"
+                }
+            },
+            "DependsOn": [
+                "TRUSTSubnet4",
+                "TRUSTRouteNAT4"
             ]
         },
         "S3Endpoint2": {
