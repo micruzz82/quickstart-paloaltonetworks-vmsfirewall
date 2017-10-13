@@ -955,7 +955,13 @@
                 "KeyName": {
                     "Ref": "KeyName"
                 },
-                "AssociatePublicIpAddress": "true",
+                "AssociatePublicIpAddress": {
+                	"Fn::If": [
+                        "NATGatewayRequired",
+                        "false",
+                        "true"
+                    ]
+                },
                 "ImageId": {
                     "Fn::FindInMap": [
                         "AWSAMIRegionMap",
