@@ -798,6 +798,21 @@
                                 },
                                 {
                                     "Effect": "Allow",
+                                    "Action": "s3:ListBucket",
+                                    "Resource": {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "arn:aws:s3:::",
+                                                {
+                                                    "Ref": "LambdaZipsBucket"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "Effect": "Allow",
                                     "Action": "s3:GetObject",
                                     "Resource": {
                                         "Fn::Join": [
@@ -828,6 +843,17 @@
                                                     }
                                                 ]
                                             ]
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "arn:aws:s3:::",
+                                                    {
+                                                        "Ref": "LambdaZipsBucket"
+                                                    }
+                                                ]
+                                            ]
                                         }
                                     ]
                                 },
@@ -835,7 +861,8 @@
                                     "Effect": "Allow",
                                     "Action": [
                                         "s3:PutObject",
-                                        "s3:DeleteObject"
+                                        "s3:DeleteObject",
+                                        "s3:GetObject"
                                     ],
                                     "Resource": [
                                         {
@@ -1036,7 +1063,7 @@
                 },
                 "Code": {
                     "S3Bucket": {
-                        "Ref": "QSS3BucketName"
+                        "Ref": "LambdaZipsBucket"
                     },
                     "S3Key": {
                         "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
@@ -1189,7 +1216,7 @@
                 },
                 "Code": {
                     "S3Bucket": {
-                        "Ref": "QSS3BucketName"
+                        "Ref": "LambdaZipsBucket"
                     },
                     "S3Key": {
                         "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
@@ -1324,7 +1351,7 @@
                     "Ref": "MasterS3Bucket"
                 },
                 "PanS3BucketTpl": {
-                    "Ref": "QSS3BucketName"
+                    "Ref": "LambdaZipsBucket"
                 },
                 "PanS3KeyTpl": {
                     "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
