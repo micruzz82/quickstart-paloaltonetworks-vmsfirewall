@@ -171,54 +171,54 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "PANFW8BYOL": "PA-VM-AWS-8.0.0-7064e142-2859-40a4-ab62-8b0996b842e9-ami-29de223f.3",
-                "PANFW8PAYG1": "PA-VM-AWS-8.0.0-6f2a9521-7dc3-46cc-8891-8c4d02d29666-ami-29de223f.3",
-                "PANFW8PAYG2": "PA-VM-AWS-8.0.0-7064e142-2859-40a4-ab62-8b0996b842e9-ami-29de223f.3"
+                "PANFW8BYOL": "PA-VM-AWS-8.1.0-7064e142-2859-40a4-ab62-8b0996b842e9-ami-28669055.4",
+                "PANFW8PAYG1": "PA-VM-AWS-8.1.0-6f2a9521-7dc3-46cc-8891-8c4d02d29666-ami-28669055.4",
+                "PANFW8PAYG2": "PA-VM-AWS-8.1.0-8736f7a7-35b2-4e03-a8eb-6a749a987428-ami-28669055.4"
             },
             "ap-northeast-1": {
-                "PANFW8BYOL": "ami-a8bef8cf",
-                "PANFW8PAYG1": "ami-56bff931",
-                "PANFW8PAYG2": "ami-a8bef8cf"
+                "PANFW8BYOL": "ami-57662d31",
+                "PANFW8PAYG1": "ami-39662d5f",
+                "PANFW8PAYG2": "ami-75652e13"
             },
             "ap-southeast-1": {
-                "PANFW8BYOL": "ami-55bb0f36",
-                "PANFW8PAYG1": "ami-a5bb0fc6",
-                "PANFW8PAYG2": "ami-55bb0f36"
+                "PANFW8BYOL": "ami-27baeb5b",
+                "PANFW8PAYG1": "ami-55bced29",
+                "PANFW8PAYG2": "ami-36bdec4a"
             },
             "ap-southeast-2": {
-                "PANFW8BYOL": "ami-2f3e384c",
-                "PANFW8PAYG1": "ami-cc3335af",
-                "PANFW8PAYG2": "ami-2f3e384c"
+                "PANFW8BYOL": "ami-00d61562",
+                "PANFW8PAYG1": "ami-aed112cc",
+                "PANFW8PAYG2": "ami-add013cf"
             },
             "eu-central-1": {
-                "PANFW8BYOL": "ami-bb3af3d4",
-                "PANFW8PAYG1": "ami-e43df48b",
-                "PANFW8PAYG2": "ami-bb3af3d4"
+                "PANFW8BYOL": "ami-55bfd73a",
+                "PANFW8PAYG1": "ami-1bbdd574",
+                "PANFW8PAYG2": "ami-1ebdd571"
             },
             "eu-west-1": {
-                "PANFW8BYOL": "ami-32fca754",
-                "PANFW8PAYG1": "ami-abffa4cd",
-                "PANFW8PAYG2": "ami-32fca754"
+                "PANFW8BYOL": "ami-62b5fb1b",
+                "PANFW8PAYG1": "ami-edb0fe94",
+                "PANFW8PAYG2": "ami-1fb1ff66"
             },
             "us-east-1": {
-                "PANFW8BYOL": "ami-f22cd7e4",
-                "PANFW8PAYG1": "ami-4222d954",
-                "PANFW8PAYG2": "ami-f22cd7e4"
+                "PANFW8BYOL": "ami-a2fa3bdf",
+                "PANFW8PAYG1": "ami-ce01c0b3",
+                "PANFW8PAYG2": "ami-bffd3cc2"
             },
             "us-east-2": {
-                "PANFW8BYOL": "ami-360c2953",
-                "PANFW8PAYG1": "ami-0e0d286b",
-                "PANFW8PAYG2": "ami-360c2953"
+                "PANFW8BYOL": "ami-11e1d774",
+                "PANFW8PAYG1": "ami-10f3c575",
+                "PANFW8PAYG2": "ami-9ef3c5fb"
             },
             "us-west-1": {
-                "PANFW8BYOL": "ami-a1a5f8c1",
-                "PANFW8PAYG1": "ami-59a3fe39",
-                "PANFW8PAYG2": "ami-a1a5f8c1"
+                "PANFW8BYOL": "ami-a95b4fc9",
+                "PANFW8PAYG1": "ami-235b4f43",
+                "PANFW8PAYG2": "ami-854551e5"
             },
             "us-west-2": {
-                "PANFW8BYOL": "ami-ca14afaa",
-                "PANFW8PAYG1": "ami-9c15aefc",
-                "PANFW8PAYG2": "ami-ca14afaa"
+                "PANFW8BYOL": "ami-d424b5ac",
+                "PANFW8PAYG1": "ami-8a22b3f2",
+                "PANFW8PAYG2": "ami-9a29b8e2"
             }
         },
         "PanFWAMINameMap": {
