@@ -234,126 +234,12 @@
                 }
             ]
         },
-        "CreateSubnet4": {
-            "Fn::Equals": [
-                {
-                    "Ref": "NumberOfAZs"
-                },
-                "4"
-            ]
-        },
-        "CreateSubnetAz3": {
-            "Fn::Equals": [
-                {
-                    "Ref": "NumberOfAZs"
-                },
-                "3"
-            ]
-        },
-        "NATGatewayNotRequired": {
-            "Fn::Equals": [
-                {
-                    "Ref": "NATGateway"
-                },
-                "No"
-            ]
-        },
-        "NATGatewayNotRequired2": {
-            "Fn::And": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Ref": "NATGateway"
-                        },
-                        "No"
-                    ]
-                },
-                {
-                    "Condition": "CreateSubnet2"
-                }
-            ]
-        },
-        "NATGatewayNotRequired3": {
-            "Fn::And": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Ref": "NATGateway"
-                        },
-                        "No"
-                    ]
-                },
-                {
-                    "Condition": "CreateSubnet3"
-                }
-            ]
-        },
-        "NATGatewayNotRequired4": {
-            "Fn::And": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Ref": "NATGateway"
-                        },
-                        "No"
-                    ]
-                },
-                {
-                    "Condition": "CreateSubnet4"
-                }
-            ]
-        },
         "NATGatewayRequired": {
             "Fn::Equals": [
                 {
                     "Ref": "NATGateway"
                 },
                 "Yes"
-            ]
-        },
-        "NATGatewayRequired2": {
-            "Fn::And": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Ref": "NATGateway"
-                        },
-                        "Yes"
-                    ]
-                },
-                {
-                    "Condition": "CreateSubnet2"
-                }
-            ]
-        },
-        "NATGatewayRequired3": {
-            "Fn::And": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Ref": "NATGateway"
-                        },
-                        "Yes"
-                    ]
-                },
-                {
-                    "Condition": "CreateSubnet3"
-                }
-            ]
-        },
-        "NATGatewayRequired4": {
-            "Fn::And": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Ref": "NATGateway"
-                        },
-                        "Yes"
-                    ]
-                },
-                {
-                    "Condition": "CreateSubnet4"
-                }
             ]
         }
     },
@@ -384,16 +270,16 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": 80,
+                        "ToPort": 80,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ],
                 "SecurityGroupEgress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": 80,
+                        "ToPort": 80,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -451,10 +337,7 @@
                     "Interval": "30",
                     "Timeout": "5"
                 }
-            },
-            "DependsOn": [
-                "PublicLoadBalancerSecurityGroup"
-            ]
+            }
         },
         "PublicElasticLoadBalancer3": {
             "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
@@ -516,10 +399,7 @@
                     "Interval": "30",
                     "Timeout": "5"
                 }
-            },
-            "DependsOn": [
-                "PublicLoadBalancerSecurityGroup"
-            ]
+            }
         },
         "PrivateLoadBalancerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
@@ -547,8 +427,8 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": 80,
+                        "ToPort": 80,
                         "CidrIp": {
                             "Ref": "VPCCIDR"
                         }
@@ -557,8 +437,8 @@
                 "SecurityGroupEgress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": 80,
+                        "ToPort": 80,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -616,10 +496,7 @@
                     "Interval": "30",
                     "Timeout": "5"
                 }
-            },
-            "DependsOn": [
-                "PrivateLoadBalancerSecurityGroup"
-            ]
+            }
         },
         "PrivateElasticLoadBalancer3": {
             "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
@@ -681,10 +558,7 @@
                     "Interval": "30",
                     "Timeout": "5"
                 }
-            },
-            "DependsOn": [
-                "PrivateLoadBalancerSecurityGroup"
-            ]
+            }
         },
         "WebServerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
@@ -712,16 +586,16 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": {
                             "Ref": "SSHLocation"
                         }
                     },
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": {
                             "Ref": "VPCCIDR"
                         }
@@ -732,9 +606,6 @@
         "WebServerGroup": {
             "Type": "AWS::AutoScaling::AutoScalingGroup",
             "Condition": "CreateSubnet2",
-            "DependsOn": [
-                "WebServerLaunchConfig"
-            ],
             "Properties": {
                 "AvailabilityZones": [
                     {
@@ -784,8 +655,6 @@
                 ],
                 "Tags": [
                     {
-                        "ResourceType": "auto-scaling-group",
-                        "ResourceId": "WebServerGroup",
                         "PropagateAtLaunch": true,
                         "Value": {
                             "Fn::Join": [
@@ -806,9 +675,6 @@
         "WebServerGroup3": {
             "Type": "AWS::AutoScaling::AutoScalingGroup",
             "Condition": "CreateSubnet3",
-            "DependsOn": [
-                "WebServerLaunchConfig"
-            ],
             "Properties": {
                 "AvailabilityZones": [
                     {
@@ -874,8 +740,6 @@
                 ],
                 "Tags": [
                     {
-                        "ResourceType": "auto-scaling-group",
-                        "ResourceId": "WebServerGroup3",
                         "PropagateAtLaunch": true,
                         "Value": {
                             "Fn::Join": [
@@ -958,8 +822,8 @@
                 "AssociatePublicIpAddress": {
                     "Fn::If": [
                         "NATGatewayRequired",
-                        "false",
-                        "true"
+                        false,
+                        true
                     ]
                 },
                 "ImageId": {
@@ -1024,7 +888,7 @@
                     "Ref": "WebServerGroup"
                 },
                 "Cooldown": "60",
-                "ScalingAdjustment": "1"
+                "ScalingAdjustment": 1
             }
         },
         "WebServerScaleDownPolicy": {
@@ -1036,7 +900,7 @@
                     "Ref": "WebServerGroup"
                 },
                 "Cooldown": "60",
-                "ScalingAdjustment": "-1"
+                "ScalingAdjustment": -1
             }
         },
         "WebServerScaleUpPolicy3": {
@@ -1048,7 +912,7 @@
                     "Ref": "WebServerGroup3"
                 },
                 "Cooldown": "60",
-                "ScalingAdjustment": "1"
+                "ScalingAdjustment": 1
             }
         },
         "WebServerScaleDownPolicy3": {
@@ -1060,7 +924,7 @@
                     "Ref": "WebServerGroup3"
                 },
                 "Cooldown": "60",
-                "ScalingAdjustment": "-1"
+                "ScalingAdjustment": -1
             }
         },
         "CPUAlarmHigh": {
@@ -1071,9 +935,9 @@
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "90",
+                "Period": 300,
+                "EvaluationPeriods": 2,
+                "Threshold": 90.0,
                 "AlarmActions": [
                     {
                         "Ref": "WebServerScaleUpPolicy"
@@ -1098,9 +962,9 @@
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "70",
+                "Period": 300,
+                "EvaluationPeriods": 2,
+                "Threshold": 70.0,
                 "AlarmActions": [
                     {
                         "Ref": "WebServerScaleDownPolicy"
@@ -1125,9 +989,9 @@
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "90",
+                "Period": 300,
+                "EvaluationPeriods": 2,
+                "Threshold": 90.0,
                 "AlarmActions": [
                     {
                         "Ref": "WebServerScaleUpPolicy3"
@@ -1152,9 +1016,9 @@
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "70",
+                "Period": 300,
+                "EvaluationPeriods": 2,
+                "Threshold": 70.0,
                 "AlarmActions": [
                     {
                         "Ref": "WebServerScaleDownPolicy3"

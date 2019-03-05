@@ -528,10 +528,7 @@
                         "Ref": "FirewallBootstrapRole"
                     }
                 ]
-            },
-            "DependsOn": [
-                "FirewallBootstrapRole"
-            ]
+            }
         },
         "MgmtSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
@@ -559,32 +556,32 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
+                        "FromPort": 22,
+                        "ToPort": 22,
                         "CidrIp": {
                             "Ref": "SSHLocation"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "443",
-                        "ToPort": "443",
+                        "FromPort": 443,
+                        "ToPort": 443,
                         "CidrIp": {
                             "Ref": "SSHLocation"
                         }
                     },
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": {
                             "Ref": "VPCCIDR"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
+                        "FromPort": 22,
+                        "ToPort": 22,
                         "CidrIp": {
                             "Ref": "VPCCIDR"
                         }
@@ -593,8 +590,8 @@
                 "SecurityGroupEgress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -626,16 +623,16 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ],
                 "SecurityGroupEgress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -667,8 +664,8 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": {
                           	"Ref": "VPCCIDR"
                         }
@@ -677,8 +674,8 @@
                 "SecurityGroupEgress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -710,8 +707,8 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": {
                           	"Ref": "VPCCIDR"
                         }
@@ -720,8 +717,8 @@
                 "SecurityGroupEgress": [
                     {
                         "IpProtocol": "-1",
-                        "FromPort": "-1",
-                        "ToPort": "-1",
+                        "FromPort": -1,
+                        "ToPort": -1,
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -1070,7 +1067,7 @@
                     }
                 },
                 "Runtime": "python2.7",
-                "Timeout": "300",
+                "Timeout": 300,
                 "VpcConfig": {
                     "SubnetIds": {
                         "Fn::If": [
@@ -1095,8 +1092,6 @@
                 }
             },
             "DependsOn": [
-                "LambdaExecutionRole",
-                "VPCSecurityGroup",
                 "CopyZips"
             ]
         },
@@ -1120,10 +1115,7 @@
                         "Protocol": "lambda"
                     }
                 ]
-            },
-            "DependsOn": [
-                "AddENILambda"
-            ]
+            }
         },
         "LambdaENIPermission": {
             "Type": "AWS::Lambda::Permission",
@@ -1139,11 +1131,7 @@
                 "SourceArn": {
                     "Ref": "LambdaENISNSTopic"
                 }
-            },
-            "DependsOn": [
-                "AddENILambda",
-                "LambdaENISNSTopic"
-            ]
+            }
         },
         "ASGNotifierRole": {
             "Type": "AWS::IAM::Role",
@@ -1198,11 +1186,7 @@
                         "Ref": "ASGNotifierRole"
                     }
                 ]
-            },
-            "DependsOn": [
-                "ASGNotifierRole",
-                "LambdaENISNSTopic"
-            ]
+            }
         },
         "InitLambda": {
             "Type": "AWS::Lambda::Function",
@@ -1223,10 +1207,9 @@
                     }
                 },
                 "Runtime": "python2.7",
-                "Timeout": "300"
+                "Timeout": 300
             },
             "DependsOn": [
-                "LambdaExecutionRole",
                 "CopyZips"
             ]
         },
@@ -1235,11 +1218,6 @@
             "Version": "1.0",
             "DependsOn": [
                 "AddENILambda",
-                "InitLambda",
-                "TrustSecurityGroup",
-                "UntrustSecurityGroup",
-                "MgmtSecurityGroup",
-                "VPCSecurityGroup",
                 "CopyZips"
             ],
             "Properties": {

@@ -395,40 +395,6 @@
             }
         }
     },
-    "Mappings": {
-        "AWSAMIRegionMap": {
-            "AMI": {
-                "AMZNLINUXHVM": "amzn-ami-hvm-2018.03.0.20181129-x86_64-gp2"
-            },
-            "ap-northeast-1": {
-                "AMZNLINUXHVM": "ami-00a5245b4816c38e6"
-            },
-            "ap-southeast-1": {
-                "AMZNLINUXHVM": "ami-05b3bcf7f311194b3"
-            },
-            "ap-southeast-2": {
-                "AMZNLINUXHVM": "ami-02fd0b06f06d93dfc"
-            },
-            "eu-central-1": {
-                "AMZNLINUXHVM": "ami-0cfbf4f6db41068ac"
-            },
-            "eu-west-1": {
-                "AMZNLINUXHVM": "ami-08935252a36e25f85"
-            },
-            "us-east-1": {
-                "AMZNLINUXHVM": "ami-0080e4c5bc078760e"
-            },
-            "us-east-2": {
-                "AMZNLINUXHVM": "ami-0cd3dfa4e37921605"
-            },
-            "us-west-1": {
-                "AMZNLINUXHVM": "ami-0ec6517f6edbf8044"
-            },
-            "us-west-2": {
-                "AMZNLINUXHVM": "ami-01e24be29428c15b2"
-            }
-        }
-    },
     "Conditions": {
         "CreateSubnet2": {
             "Fn::Equals": [
@@ -466,28 +432,12 @@
                 "4"
             ]
         },
-        "CreateSubnetAz3": {
-            "Fn::Equals": [
-                {
-                    "Ref": "NumberOfAZs"
-                },
-                "3"
-            ]
-        },
         "GovCloudCondition": {
             "Fn::Equals": [
                 {
                     "Ref": "AWS::Region"
                 },
                 "us-gov-west-1"
-            ]
-        },
-        "NATGatewayNotRequired": {
-            "Fn::Equals": [
-                {
-                    "Ref": "NATGateway"
-                },
-                "No"
             ]
         },
         "NATGatewayNotRequired2": {
@@ -533,14 +483,6 @@
                 {
                     "Condition": "CreateSubnet4"
                 }
-            ]
-        },
-        "NATGatewayRequired": {
-            "Fn::Equals": [
-                {
-                    "Ref": "NATGateway"
-                },
-                "Yes"
             ]
         },
         "NATGatewayRequired2": {
@@ -770,10 +712,7 @@
                         "Ref": "InstanceType"
                     }
                 }
-            },
-            "DependsOn": [
-                "VPCStack"
-            ]
+            }
         },
         "WebserverStack3": {
             "Type": "AWS::CloudFormation::Stack",
@@ -883,10 +822,7 @@
                         "Ref": "InstanceType"
                     }
                 }
-            },
-            "DependsOn": [
-                "VPCStack"
-            ]
+            }
         },
         "az2n": {
             "Type": "AWS::CloudFormation::Stack",
@@ -1071,7 +1007,6 @@
                 }
             },
             "DependsOn": [
-                "VPCStack",
                 "WebserverStack"
             ]
         },
@@ -1079,7 +1014,6 @@
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "NATGatewayNotRequired2",
             "DependsOn": [
-                "VPCStack",
                 "WebserverStack"
             ],
             "Properties": {
@@ -1228,7 +1162,6 @@
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "NATGatewayRequired3",
             "DependsOn": [
-                "VPCStack",
                 "WebserverStack3"
             ],
             "Properties": {
@@ -1445,7 +1378,6 @@
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "NATGatewayNotRequired3",
             "DependsOn": [
-                "VPCStack",
                 "WebserverStack3"
             ],
             "Properties": {
@@ -1611,9 +1543,6 @@
         "az4n": {
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "NATGatewayRequired4",
-            "DependsOn": [
-                "VPCStack"
-            ],
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": [
@@ -1857,9 +1786,6 @@
         "az4": {
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "NATGatewayNotRequired4",
-            "DependsOn": [
-                "VPCStack"
-            ],
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": [
