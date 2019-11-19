@@ -880,6 +880,13 @@ def lambda_handler(event, context):
     status="SUCCESS"
     try:
         if event['RequestType'] == 'Delete':
+            # Stackname > 10 chars is not supported. Therefore, during delete, we need to perform
+            # same operations we did during CREATE so that, delete stack is successfull.
+            sl=stackname.split(name)
+            if "FirewallMasterStack" in sl[0]:
+                temp=sl[0].split("-FirewallMasterStack-")
+            if len(temp[0]) > 10:
+                event['ResourceProperties']['StackName'] = "AWS-PANWQS"
             delete_resources(event)
             logger.info('[INFO]: Sending delete response to S3 URL for stack deletion to proceed')
         elif event['RequestType'] == 'Create':
