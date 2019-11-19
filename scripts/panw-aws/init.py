@@ -940,11 +940,12 @@ def lambda_handler(event, context):
                 
                 if len(temp[0]) > 10:
                     logger.error('[ERROR]: We dont support Stack Name more than 10 characters long...')
-                    send_response(event, context, "FAILURE: We dont support Stack Name more than 10 characters long")
-                    return
+                    event['ResourceProperties']['StackName'] = "AWS-PANWQS"
+                    #send_response(event, context, "FAILURE: We dont support Stack Name more than 10 characters long")
+                    #return
             except Exception as e:
                 logger.error("[StackNameLenCheck]: {}".format(e))
-                
+            print('New stack name - ', event['ResourceProperties']['StackName'])
             create_resources(event)
             logger.info('[INFO]: Sending Create response to S3 URL for stack creation to proceed')
         elif event['RequestType'] == 'Update':
