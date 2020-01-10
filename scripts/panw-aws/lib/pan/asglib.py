@@ -66,34 +66,34 @@ def purge_stack_queue(queue_url):
 
 def set_queue_attributes(queue_url, retention_period):
     """
-    Set the queue attributes 
+    Set the queue attributes
     """
-    try:         
+    try:
         sqs.set_queue_attributes(QueueUrl=queue_url,
                                  Attributes={
                                     'MessageRetentionPeriod': str(retention_period)
                                 }
         )
-        
+
     except Exception, e:
         logger.exception('Unable to set queue attributes')
-        
+
 
 def get_from_sqs_queue(queue_url, visiblity_timeout=10, waittimes_seconds=5):
     """
-     Retrieve data from a queue 
+     Retrieve data from a queue
     """
     stack_msg = None
     stack_attrs = None
 
     for retry in range(0, 10):
-        time.sleep(5) 
+        time.sleep(5)
         try:
             logger.info('Retrieve data from queue: {}'.format(queue_url))
-            response = sqs.receive_message(QueueUrl=queue_url, 
-                                       MaxNumberOfMessages=10, 
+            response = sqs.receive_message(QueueUrl=queue_url,
+                                       MaxNumberOfMessages=10,
                                        AttributeNames=['All'],
-                                       MessageAttributeNames=['All'], 
+                                       MessageAttributeNames=['All'],
                                        VisibilityTimeout=visiblity_timeout,
                                        WaitTimeSeconds=waittimes_seconds)
 
@@ -109,11 +109,11 @@ def get_from_sqs_queue(queue_url, visiblity_timeout=10, waittimes_seconds=5):
                     attrs = message.get('Attributes')
                     senttimestamp = attrs.get('SentTimestamp', None)
                     logger.info('msg details:: msg: {} ts: {} rh: {}'.format(stack_msg, senttimestamp, handle))
-                    return (stack_msg, senttimestamp, handle) 
+                    return (stack_msg, senttimestamp, handle)
         except Exception, e:
             logger.exception('Exception occurred retrieving message from queue: {}'.format(e))
 
-    
+
     return None, None, None
 
 def send_message_to_queue(queue_url, str_message):
@@ -198,7 +198,7 @@ def fix_subnets(data1):
     data=data.replace("[", "")
     data=data.replace("]", "")
     return data
-    
+
 def get_sched_func_name(stackname):
     name=stackname+"-lambda-sched-event"
     return name[-63:len(name)]
@@ -252,7 +252,7 @@ def get_s3_bucket_name1(stackname, ilbname, ip_address):
         list=dnsname.split('.')
         ilb=ilb + list[0]
         cnt = cnt + 1
- 
+
     logger.info('ILB: ' + ilb)
     name=""
     if cnt == 0:
@@ -351,7 +351,7 @@ def send_command(conn, req_url):
     conn.request("POST", req_url)
     resp = conn.getresponse()
     msg = resp.read()
-    
+
     if resp.status == 200 :
         logger.info('[200 OK] CMD: ' +  req_url + '    MSG in send_command(): ' + msg)
         root = et.fromstring(msg)
@@ -517,7 +517,7 @@ def remove_device(stackname, remove, PanoramaIP, api_key, dev_group, tp_group, s
     conn.close()
     return "Done"
 
-def get_ssl_context():  
+def get_ssl_context():
     """
     Create default ssl context
     """
@@ -594,7 +594,7 @@ def get_device_serial_no(instanceId, gwMgmtIp, fwApiKey):
 
 def deactivate_fw_license(instanceId, gwMgmtIp, fwApiKey):
     """
-    Call the FW to deactivate the license from the licensing 
+    Call the FW to deactivate the license from the licensing
     server
 
     @param gwMgmtIP: The IP address of the Firewall
@@ -610,7 +610,7 @@ def deactivate_fw_license(instanceId, gwMgmtIp, fwApiKey):
         return False
 
     logger.info('Deactivate and the license for FW: {} with IP: {}'.format(instanceId, gwMgmtIp))
-    
+
     deactivate_license_cmd = "/api/?type=op&key={}&cmd=<request><license><deactivate><VM-Capacity><mode>auto</mode></VM-Capacity></deactivate></license></request>".format(fwApiKey)
     response = execute_api_request(gwMgmtIp, 443, deactivate_license_cmd)
 
@@ -632,11 +632,11 @@ def shutdown_fw_device(instanceId, gwMgmtIp, fwApiKey):
         return False
 
     logger.info('Shutdown the firewall device : {} with IP: {}'.format(instanceId, gwMgmtIp))
-    
+
     shutdown_cmd = "/api/?type=op&key={}&cmd=<request><shutdown><system></system></shutdown></request>".format(fwApiKey)
 
     response = execute_api_request(gwMgmtIp, 443, shutdown_cmd)
-    
+
     success_msg = "Command succeeded with no output"
     if not response['result']:
         if not response['data']:
@@ -647,7 +647,7 @@ def shutdown_fw_device(instanceId, gwMgmtIp, fwApiKey):
                 error_text = msg.text
                 if success_msg in error_text:
                     logger.info('Successfully shutdown the firewall device: {} with IP: {}'.format(instanceId, gwMgmtIp))
-                    break 
+                    break
                 else:
                     logger.error('Fail to execute shutdown command for device: {} with IP: {}'.format(instanceId, gwMgmtIp))
                     logger.error("Response from the shutdown command is: {}".format(error_msg))
@@ -667,10 +667,10 @@ def set_deactivate_api_key(instanceId, gwMgmtIp, fwApiKey, deactivateApiKey):
         return False
 
     logger.info('Setup the deactivate API Key on the FW for device {} with IP: {}'.format(instanceId, gwMgmtIp))
-    
+
     deactivate_cmd = "/api/?type=op&key={}&cmd=<request><license><api-key><set><key>{}</key></set></api-key></license></request>".format(fwApiKey, deactivateApiKey)
     response = execute_api_request(gwMgmtIp, 443, deactivate_cmd)
-    
+
     if response['result'] == False:
         logger.error('PAN Firewall: Fail to set deactivate Api Key for device: {} with IP: {}'.format(instanceId, gwMgmtIp))
         result = response['data'].findall(".//line")
@@ -707,7 +707,7 @@ def remove_fw_from_panorama(stackname, instanceId, KeyPANWPanorama, gwMgmtIp, Pa
             conn.close()
             logger.error('Panorama: Fail to execute Panorama API show dg for device: ' + gwMgmtIp)
             return False
-        
+
         logger.info('show dg: ' + str(response))
         #data = response['data'].findall('./result/devices/*')
         data = response['data'].findall('./result/devicegroups/entry/devices/*')
@@ -794,13 +794,13 @@ def remove_fw_from_panorama(stackname, instanceId, KeyPANWPanorama, gwMgmtIp, Pa
         cmd_show_all_devices = "/api/?type=op&cmd=<show><devices><all></all></devices></show>&key=%s"%(api_key)
         response = send_command(conn, cmd_show_all_devices)
         if response['result'] == False:
-            conn.close() 
+            conn.close()
             logger.error('Panorama: Fail to execute Panorama API show devices for device: ' + gwMgmtIp)
             return False
 
         logger.info('show all devices: response: ' + str(response))
         data = response['data'].findall('./result/devices/*')
-                    
+
         for entry in data:
             ip_tag = entry.find('ip-address')
             if ip_tag is None:
@@ -822,29 +822,29 @@ def remove_fw_from_panorama(stackname, instanceId, KeyPANWPanorama, gwMgmtIp, Pa
             logger.error('Panorama: No registered device found with IP address: ' + gwMgmtIp)
             conn.close()
             return True
-            
+
     cmd_delete_device = "/api/?type=config&action=delete&xpath=/config/mgt-config/devices/entry[@name='%s']&key=%s"%(serial_no, api_key)
     response = send_command(conn, cmd_delete_device)
     if response['result'] == False:
         conn.close()
         logger.error('Panorama: Fail to execute Panorama API delete device for device: ' + gwMgmtIp)
         return False
-            
+
     logger.info('delete unmanaged device: response: ' + str(response))
     cmd_commit = "/api/?type=commit&cmd=<commit></commit>&key="+api_key
     response = send_command(conn, cmd_commit)
-                     
+
     if response['result'] == False:
-        conn.close() 
+        conn.close()
         logger.error('Panorama: Fail to execute Panorama API commit for device: ' + gwMgmtIp)
         return False
-            
+
     job_id=""
     data = response['data'].findall('./result/*')
     for entry in data:
         if entry.tag == 'job':
             job_id = entry.text
-        
+
     if job_id is None:
         conn.close()
         logger.error('Job id could not be found')
@@ -921,21 +921,21 @@ def create_cw_metrics_lambda(Input, IamLambda, eniId, NATGateway, SubnetIDLambda
     asg_name=Input['ASGName']
     PanS3BucketTpl=Input['PanS3BucketTpl']
     PanS3KeyTpl=Input['PanS3KeyTpl']
-    
+
     event_rule_name= get_event_rule_name(stackname, instanceId)
     target_id_name = get_target_id_name(stackname, instanceId)
-    
+
     logger.info('Creating event rule: ' + event_rule_name)
-    
+
     try:
         response = events_client.put_rule(
             Name=event_rule_name,
             ScheduleExpression='rate(1 minute)',
             State='ENABLED'
         )
-        
+
         events_source_arn = response.get('RuleArn')
-    
+
         lambda_exec_role_arn = iam.get_role(RoleName=IamLambda).get('Role').get('Arn')
         lambda_func_name= get_lambda_cloud_watch_func_name(stackname, asg_name, instanceId)
     except Exception as e:
@@ -950,7 +950,7 @@ def create_cw_metrics_lambda(Input, IamLambda, eniId, NATGateway, SubnetIDLambda
             sgid=sgv
             response = lambda_client.create_function(
                 FunctionName=lambda_func_name,
-                Runtime='python2.7',
+                Runtime='python3.7',
                 Role=lambda_exec_role_arn,
                 Handler='metrics.lambda_handler',
                 Code={
@@ -968,7 +968,7 @@ def create_cw_metrics_lambda(Input, IamLambda, eniId, NATGateway, SubnetIDLambda
         else:
             response = lambda_client.create_function(
                 FunctionName=lambda_func_name,
-                Runtime='python2.7',
+                Runtime='python3.7',
                 Role=lambda_exec_role_arn,
                 Handler='metrics.lambda_handler',
                 Code={
@@ -997,7 +997,7 @@ def create_cw_metrics_lambda(Input, IamLambda, eniId, NATGateway, SubnetIDLambda
     except Exception as e:
         logger.error("[LambdaAddPermission in Create CW]: {}".format(e))
         return False
-        
+
     try:
         response=ec2_client.describe_network_interfaces(NetworkInterfaceIds=[eniId])
     except Exception as e:
@@ -1033,7 +1033,7 @@ def create_cw_metrics_lambda(Input, IamLambda, eniId, NATGateway, SubnetIDLambda
         response= events_client.put_targets(
             Rule=event_rule_name,
             Targets=
-                [{ 
+                [{
                     'Id': target_id_name,
                     'Arn': lambda_function_arn,
                     'Input': json.dumps(Input)
@@ -1049,11 +1049,11 @@ def create_cw_metrics_lambda(Input, IamLambda, eniId, NATGateway, SubnetIDLambda
 
 def delete_cw_metrics_lambda(stackname, asg_name, instanceId, IamLambda):
     logger.info('Deleteing Cloud Watch Metrics Lambda Function...')
-    
+
     lambda_func_name= get_lambda_cloud_watch_func_name(stackname, asg_name, instanceId)
     event_rule_name = get_event_rule_name(stackname, instanceId)
     target_id_name = get_target_id_name(stackname, instanceId)
-    
+
     logger.info('Removing targets for event rule: ' +  event_rule_name)
     try:
         events_client.remove_targets(Rule=event_rule_name,
@@ -1073,7 +1073,7 @@ def delete_cw_metrics_lambda(stackname, asg_name, instanceId, IamLambda):
     except Exception as e:
         logger.error("[Delete CW metrics Lambda Function]: {}".format(e))
         return False
-   
+
     return True
 
 def remove_s3_bucket(s3_bucket_name):
@@ -1108,7 +1108,7 @@ def remove_asg_life_cycle(asg_name):
 
 def remove_asg_vms(stackname, asg_grp_name, KeyPANWPanorama, delete_stack):
     response=asg.describe_auto_scaling_groups(AutoScalingGroupNames=[asg_grp_name])
-   
+
     # Initiate removal of all EC2 instances associated to ASG
     found = False
     for i in response['AutoScalingGroups']:
@@ -1129,7 +1129,7 @@ def remove_asg_vms(stackname, asg_grp_name, KeyPANWPanorama, delete_stack):
                 ec2_client.terminate_instances(InstanceIds=[ec2i['InstanceId']])
             except Exception as e:
                 logger.warning("[Terminate Instance in ASG]: {}".format(e))
-    
+
     return found
 
 def common_alarm_func_del(alarmname):
@@ -1379,7 +1379,7 @@ def panorama_delete_stack(stackname, r, asg_name):
         return
 
     response=asg.describe_auto_scaling_groups(AutoScalingGroupNames=[asg_name])
-   
+
     # Initiate removal of all EC2 instances associated to ASG
     found = False
     for i in response['AutoScalingGroups']:
@@ -1545,7 +1545,7 @@ def delete_asg_stacks(stackname, r, ilb_name, elb_name, ScalingParameter, KeyPAN
 
     if PanoramaIP == "":
         return
-    
+
     return
 
     for r in range(1,60):

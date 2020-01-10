@@ -72,8 +72,8 @@ valid_panfw_productcode_ids = {
 
 
 def random_string(string_length=10):
-    random = str(uuid.uuid4()) 
-    random = random.replace("-","") 
+    random = str(uuid.uuid4())
+    random = random.replace("-","")
     return random[0:string_length]
 
 def send_response(event, context, responseStatus):
@@ -127,7 +127,7 @@ def get_lambda_func_name(stackname):
 def get_event_rule_name(stackname):
     name = stackname + 'event-rule-init-lambda'
     return name[-63:len(name)]
-    
+
 def get_target_id_name(stackname):
     name = stackname + 'target-id-init-lambda'
     return name[-63:len(name)]
@@ -457,7 +457,7 @@ def update_resources(event):
 
     if remove_sched_func(stackname) == False:
         logger.error('Failed to delete Sched Lambda Func (VIP Monitoring)')
-        return 
+        return
     create_resources(event)
 
     if PanS3BucketTpl == "panw-aws":
@@ -502,7 +502,7 @@ def update_resources(event):
                 AZ=i['AvailabilityZones']
                 logger.info('Update Resource: ASG Name: ' + i['AutoScalingGroupName'])
                 asg_name = i['AutoScalingGroupName']
-                asg.update_auto_scaling_group(AutoScalingGroupName=asg_name, 
+                asg.update_auto_scaling_group(AutoScalingGroupName=asg_name,
 			MinSize=int(MinInstancesASG), MaxSize=int(MaximumInstancesASG),
 			DesiredCapacity=int(MinInstancesASG), DefaultCooldown=int(ScalingPeriod))
                 search = lib.get_asg_name1(stackname)
@@ -571,7 +571,7 @@ def update_resources(event):
 
 def validate_ami_id(event):
     """
-       Validate that the AMI-ID provided is a valid 
+       Validate that the AMI-ID provided is a valid
        PAN FW AMI.
     """
 
@@ -603,7 +603,7 @@ def validate_ami_id(event):
             valid_state = True
 
     if valid_ami and valid_state:
-        return True 
+        return True
 
 def create_resources(event):
     stackname = event['ResourceProperties']['StackName']
@@ -682,7 +682,7 @@ def create_resources(event):
     logger.info('creating lambda function: ' + lambda_func_name)
     response = lambda_client.create_function(
             FunctionName=lambda_func_name,
-            Runtime='python2.7',
+            Runtime='python3.7',
             Role=lambda_exec_role_arn,
             Handler='sched_evt1.lambda_handler',
             Code={
@@ -746,9 +746,9 @@ def create_resources(event):
     stack_metadata= {
                 'SGM': MgmtSecurityGroup, 'SGU': UntrustSecurityGroup, 'SGT': TrustSecurityGroup, 'SGV': VPCSecurityGroup,
                 'IamLambda': LambdaExecutionRole, 'StackName': StackName, 'PanS3BucketTpl': PanS3BucketTpl,
-                'PanS3KeyTpl': PanS3KeyTpl, 
-                'ScalingParameter': ScalingParameter, 
-                'SubnetIDNATGW': SubnetIDNATGW, 
+                'PanS3KeyTpl': PanS3KeyTpl,
+                'ScalingParameter': ScalingParameter,
+                'SubnetIDNATGW': SubnetIDNATGW,
                 'PIP': pip, 'PDG': pdg, 'PTPL': ptpl, 'Hostname': dict['hostname']
                }
     lib.set_queue_attributes(LambdaENIQueue, 345600)
@@ -756,7 +756,7 @@ def create_resources(event):
     lib.send_message_to_queue(LambdaENIQueue, json.dumps(stack_metadata))
 
     logger.info('Event put targets')
-    
+
     target_id_name = get_target_id_name(stackname)
     response= events_client.put_targets(
             Rule=event_rule_name,
@@ -798,21 +798,21 @@ def create_new_table(event):
         table = dynamodb.create_table(
           TableName=tablename,
           KeySchema=[
-          {  
+          {
             'AttributeName': 'Type',
             'KeyType': 'HASH'  #Partition key
           },
-          {  
+          {
             'AttributeName': 'Data',
             'KeyType': 'RANGE'  #Sort key (FW/ILB)
           }
          ],
          AttributeDefinitions=[
-          {  
+          {
             'AttributeName': 'Data',
             'AttributeType': 'S'
           },
-          {  
+          {
             'AttributeName': 'Type',
             'AttributeType': 'S'
           }
@@ -944,7 +944,7 @@ def lambda_handler(event, context):
                     temp=sl[0].split("-FirewallMasterStack-")
                     print(temp)
                 print('Length of stackname is: ' + str(len(temp[0])))
-                
+
                 if len(temp[0]) > 10:
                     logger.error('[ERROR]: We dont support Stack Name more than 10 characters long...')
                     event['ResourceProperties']['StackName'] = "AWS-PANWQS"

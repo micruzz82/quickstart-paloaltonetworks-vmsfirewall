@@ -1066,7 +1066,7 @@
                         "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
                     }
                 },
-                "Runtime": "python2.7",
+                "Runtime": "python3.7",
                 "Timeout": 300,
                 "VpcConfig": {
                     "SubnetIds": {
@@ -1206,7 +1206,7 @@
                         "Fn::Sub": "${QSS3KeyPrefix}scripts/panw-aws/panw-aws.zip"
                     }
                 },
-                "Runtime": "python2.7",
+                "Runtime": "python3.7",
                 "Timeout": 300
             },
             "DependsOn": [
@@ -1401,7 +1401,7 @@
             "Properties": {
                 "Description": "Copies objects from a source S3 bucket to a destination",
                 "Handler": "index.handler",
-                "Runtime": "python2.7",
+                "Runtime": "python3.7",
                 "Role": {
                     "Fn::GetAtt": [
                         "LambdaExecutionRole",
