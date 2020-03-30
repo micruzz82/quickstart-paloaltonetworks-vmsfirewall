@@ -101,6 +101,10 @@ Parameters:
       can include numbers, lowercase letters, uppercase letters, and hyphens (-).
       It cannot start or end with a hyphen (-).
     Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Type: String
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
@@ -275,6 +279,7 @@ Metadata:
           default: AWS Quick Start Configuration
         Parameters:
           - QSS3BucketName
+          - QSS3BucketRegion
           - QSS3KeyPrefix
     ParameterLabels:
       AZSubnetIDLambda:
@@ -311,6 +316,8 @@ Metadata:
         default: PAN Firewall 8.0 License Type
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
       SSHLocation:
@@ -489,10 +496,7 @@ Resources:
                     - /*
               - Effect: Allow
                 Action: s3:ListBucket
-                Resource: !Join
-                  - ''
-                  - - 'arn:aws:s3:::'
-                    - !Ref 'QSS3BucketName'
+                Resource: "*"
               - Effect: Allow
                 Action: s3:ListBucket
                 Resource: !Join
@@ -501,23 +505,12 @@ Resources:
                     - !Ref 'LambdaZipsBucket'
               - Effect: Allow
                 Action: s3:GetObject
-                Resource: !Join
-                  - ''
-                  - - 'arn:aws:s3:::'
-                    - !Ref 'QSS3BucketName'
+                Resource: "*"
                     - /*
               - Effect: Allow
                 Action:
                   - s3:GetBucketLocation
-                Resource:
-                  - !Join
-                    - ''
-                    - - 'arn:aws:s3:::'
-                      - !Ref 'QSS3BucketName'
-                  - !Join
-                    - ''
-                    - - 'arn:aws:s3:::'
-                      - !Ref 'LambdaZipsBucket'
+                Resource: "*"
               - Effect: Allow
                 Action:
                   - s3:PutObject
@@ -795,7 +788,7 @@ Resources:
     Properties:
       ServiceToken: !GetAtt 'CopyZipsFunction.Arn'
       DestBucket: !Ref 'LambdaZipsBucket'
-      SourceBucket: !Ref 'QSS3BucketName'
+      SourceBucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Prefix: !Ref 'QSS3KeyPrefix'
       Objects:
         - scripts/panw-aws/panw-aws.zip
