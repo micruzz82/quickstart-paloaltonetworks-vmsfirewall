@@ -1,0 +1,36 @@
+project:
+  name: quickstart-paloaltonetworks-vmsfirewall
+  owner: quickstart-eng@amazon.com
+  package_lambda: false
+  regions:
+  - ap-northeast-1
+  - ap-southeast-1
+  - ap-southeast-2
+  - eu-central-1
+  - eu-west-1
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  s3_bucket: ''
+tests:
+  vmsfirewall:
+    parameters:
+      AvailabilityZones: $[taskcat_getaz_2]
+      KeyName: $[taskcat_getkeypair]
+      MasterS3Bucket: quickstart-pan-fw-bootstrap
+      KeyPANWPanorama: ""
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+    regions:
+    - ap-northeast-1
+    - ap-southeast-1
+    - ap-southeast-2
+    - eu-central-1
+    - eu-west-1
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+    s3_bucket: ''
+    template: templates/firewall-master.template
