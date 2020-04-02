@@ -206,6 +206,7 @@ Conditions:
   NATGatewayRequired: !Equals
     - !Ref 'NATGateway'
     - 'Yes'
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Rules:
   AZSubnetIDMgmt:
     Assertions:

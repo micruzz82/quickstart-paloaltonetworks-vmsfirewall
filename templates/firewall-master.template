@@ -369,6 +369,7 @@ Conditions:
       - !Ref 'NATGateway'
       - 'Yes'
     - !Condition 'CreateSubnet4'
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
